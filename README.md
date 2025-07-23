@@ -146,7 +146,7 @@ localbites/
    ```bash
    git clone https://github.com/MuhammadMuzammil21/localbites.git
    cd localbites
-````
+
 
 2. **Install dependencies**
 
