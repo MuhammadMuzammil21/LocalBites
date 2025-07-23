@@ -227,7 +227,7 @@ MIT License — free to use and modify.
 
 ## 👤 Author
 
-Built with ❤️ by **Muzammil Khan**
+Built with by **Muzammil Khan**
 [LinkedIn](https://www.linkedin.com/in/MuhammadMuzammil21) • [GitHub](https://github.com/MuhammadMuzammil21)
 
 ---
