@@ -17,6 +17,10 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/menu', menuRoutes);
+app.use('/api/cart', require('./routes/cartRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
+
 
 // Routes
 app.get('/', (req, res) => {

@@ -26,9 +26,37 @@ const addMenuItem = async (req, res) => {
 // @access  Public
 const getMenuItems = async (req, res) => {
   const { restaurantId } = req.params;
-  const items = await MenuItem.find({ restaurant_id: restaurantId });
-  res.json(items);
+  const { search, category, isVeg, sort } = req.query;
+
+  let query = { restaurant_id: restaurantId };
+
+  if (search) {
+    query.name = { $regex: search, $options: 'i' }; // case-insensitive partial match
+  }
+
+  if (category) {
+    query.category = category;
+  }
+
+  if (isVeg === 'true' || isVeg === 'false') {
+    query.isVeg = isVeg === 'true';
+  }
+
+  // Sorting logic
+  let sortOption = {};
+  if (sort === 'price') sortOption.price = 1;
+  else if (sort === '-price') sortOption.price = -1;
+  else if (sort === 'name') sortOption.name = 1;
+  else if (sort === '-name') sortOption.name = -1;
+
+  try {
+    const items = await MenuItem.find(query).sort(sortOption);
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ message: 'Server Error', error: err.message });
+  }
 };
+
 
 // @desc    Get a single menu item
 // @route   GET /api/menu/item/:id
