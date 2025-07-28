@@ -1,14 +1,11 @@
 "use client";
 
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "../ui/dialog"
-  import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";

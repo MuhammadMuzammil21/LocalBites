@@ -4,6 +4,9 @@ import Login from './pages/Login';
 import Menu from './pages/Menu';
 import Cart from './pages/Cart';
 import AdminDashboard from './pages/AdminDashboard';
+import CheckoutPage from "./pages/CheckoutPage";
+
+
 
 function App() {
   return (
@@ -12,7 +15,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/menu/:restaurantId" element={<Menu />} />
-        <Route path="/cart" element={<Cart />} />
+        <Route path="/cart" element={<Cart/>} />
+        <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
