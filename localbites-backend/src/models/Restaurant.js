@@ -6,6 +6,7 @@ const restaurantSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    description: String,
     slug: {
       type: String,
       required: true,
@@ -30,8 +31,15 @@ const restaurantSchema = new mongoose.Schema(
       gallery: [String],
     },
     location: {
-      type: { type: String, enum: ['Point'], default: 'Point' },
-      coordinates: { type: [Number], default: [0, 0] }, // [lng, lat]
+      type: {
+        type: String,
+        enum: ['Point'],
+        required: true,
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        required: true,
+      }
     },
     owner_id: {
       type: mongoose.Schema.Types.ObjectId,

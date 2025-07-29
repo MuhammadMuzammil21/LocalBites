@@ -1,5 +1,6 @@
 const Restaurant = require('../models/Restaurant');
 const slugify = require('slugify');
+const mongoose = require('mongoose');
 
 // @desc    Create a restaurant
 // @route   POST /api/restaurants

@@ -162,6 +162,7 @@ function NavigationLinks({ vertical = false }: { vertical?: boolean }) {
   return (
     <div className={className}>
       <NavLink href="/" text="Home" />
+      <NavLink href="/explore" text="Explore" />
       <NavLink href="/menu" text="Menu" />
       <NavLink href="/orders" text="Orders" />
     </div>
