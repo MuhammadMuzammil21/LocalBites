@@ -1,14 +1,10 @@
 "use client";
-import { ShoppingCart, Menu } from "lucide-react";
+import { Menu, MapPin, User, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
 import { Avatar, AvatarFallback } from "../ui/avatar";
-import { NavigationMenuLink } from "../ui/navigation-menu";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { Separator } from "../ui/separator";
 import AuthDialog from "../auth/AuthDialog";
-import { cn } from "../../lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,129 +21,62 @@ const cartItems = [
 
 const totalPrice = cartItems.reduce((sum, item) => sum + item.price, 0);
 
-
 export default function Navbar() {
   const [user, setUser] = useState(null); // Replace with real auth
+  const navigate = useNavigate();
+
+  const handleLogoClick = () => {
+    navigate('/');
+  };
 
   return (
-    <nav className="w-full border-b shadow-sm">
-      <div className="container flex h-16 items-center justify-between">
+    <nav className="fixed top-0 left-0 right-0 bg-transparent backdrop-blur-sm z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
         {/* Logo */}
-        <div className="text-xl font-bold text-primary">LocalBites</div>
+        <div 
+          onClick={handleLogoClick}
+          className="text-xl font-bold text-white cursor-pointer hover:text-gray-200 transition-colors"
+        >
+          Local<span className="text-gray-300">Bites</span>
+        </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-6">
+        <div className="hidden md:flex items-center space-x-8">
           <NavigationLinks />
         </div>
 
-        {/* Desktop Cart Dropdown */}
-        <div className="relative hidden md:block">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-                         <Button
-               variant="ghost"
-               size="icon"
-               className="relative hover:bg-accent transition-all duration-200 ease-in-out hover:scale-105"
-             >
-              <ShoppingCart className="w-5 h-5" />
-                              <Badge
-                  className="absolute -top-1 -right-1 h-4 w-4 text-[10px] p-0 animate-in fade-in duration-200"
-                  variant="secondary"
-                >
-                  {cartItems.length}
-                </Badge>
-            </Button>
-          </DropdownMenuTrigger>
-                     <DropdownMenuContent
-             align="end"
-             className="w-64 animate-in fade-in slide-in-from-top-2 duration-200"
-           >
-            <DropdownMenuLabel>Cart Items</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {cartItems.map((item) => (
-              <DropdownMenuItem key={item.id} className="flex justify-between">
-                <span>{item.name}</span>
-                <span>${item.price.toFixed(2)}</span>
-              </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => (window.location.href = "/cart")}
-              className="flex justify-between font-bold text-primary cursor-pointer hover:bg-muted"
-            >
-              <span>Total</span>
-              <span>${totalPrice.toFixed(2)}</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        </div>
-
-        {/* Auth or Avatar */}
-        <div className="hidden md:block">
-          {user ? (
-            <Avatar>
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
-          ) : (
-            <AuthDialog />
-          )}
+        {/* Desktop User Icons */}
+        <div className="hidden md:flex items-center space-x-4">
+          {/* User Icon */}
+          <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">
+            <User className="w-4 h-4 text-white" />
+          </div>
+          
+          {/* Location Icon */}
+          <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">
+            <MapPin className="w-4 h-4 text-white" />
+          </div>
         </div>
 
         {/* Mobile Menu */}
         <div className="md:hidden">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
                 <Menu className="h-6 w-6" />
               </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[250px] sm:w-[300px]">
-              <div className="flex flex-col space-y-4 mt-6">
-                <h2 className="text-lg font-semibold text-primary">Menu</h2>
-                <NavigationLinks vertical />
-                <Separator />
-
-                {/* Mobile Cart Dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="justify-start">
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      Cart ({cartItems.length})
-                    </Button>
-                  </DropdownMenuTrigger>
-                                     <DropdownMenuContent className="w-64 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <DropdownMenuLabel>Cart Items</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {cartItems.map((item) => (
-                      <DropdownMenuItem key={item.id} className="flex justify-between">
-                        <span>{item.name}</span>
-                        <span>${item.price.toFixed(2)}</span>
-                      </DropdownMenuItem>
-                    ))}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => (window.location.href = "/cart")}
-                      className="flex justify-between font-bold text-primary cursor-pointer hover:bg-muted"
-                    >
-                      <span>Total</span>
-                      <span>${totalPrice.toFixed(2)}</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-
-                <Separator />
-                {user ? (
-                  <Avatar>
-                    <AvatarFallback>U</AvatarFallback>
-                  </Avatar>
-                ) : (
-                  <AuthDialog />
-                )}
-              </div>
-            </SheetContent>
-          </Sheet>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64 animate-in fade-in slide-in-from-top-2 duration-200 bg-gray-800 border-gray-700">
+              <DropdownMenuLabel className="text-white">Menu</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-gray-700" />
+              <DropdownMenuItem className="text-white hover:bg-gray-700">
+                <a href="/regions" className="w-full">Regions</a>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-white hover:bg-gray-700">
+                <a href="/register" className="w-full">Register</a>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </nav>
@@ -156,26 +85,17 @@ export default function Navbar() {
 
 function NavigationLinks({ vertical = false }: { vertical?: boolean }) {
   const className = vertical
-    ? "flex flex-col space-y-3 text-muted-foreground text-base"
-    : "flex space-x-6 text-muted-foreground text-sm";
+    ? "flex flex-col space-y-3 text-gray-300 text-base"
+    : "flex space-x-8 text-gray-300 text-sm";
 
   return (
     <div className={className}>
-      <NavLink href="/" text="Home" />
-      <NavLink href="/explore" text="Explore" />
-      <NavLink href="/menu" text="Menu" />
-      <NavLink href="/orders" text="Orders" />
+      <a href="/regions" className="transition-colors hover:text-white flex items-center gap-1 px-3 py-2 rounded-md hover:bg-white/5">
+        Regions <ChevronDown className="w-3 h-3" />
+      </a>
+      <a href="/register" className="transition-colors hover:text-white px-3 py-2 rounded-md hover:bg-white/5">
+        Register
+      </a>
     </div>
-  );
-}
-
-function NavLink({ href, text }: { href: string; text: string }) {
-  return (
-    <NavigationMenuLink
-      href={href}
-      className={cn("transition-colors hover:text-primary")}
-    >
-      {text}
-    </NavigationMenuLink>
   );
 }
