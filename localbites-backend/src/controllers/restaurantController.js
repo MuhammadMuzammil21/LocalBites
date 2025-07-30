@@ -89,10 +89,55 @@ const deleteRestaurant = async (req, res) => {
   res.json({ message: 'Restaurant deleted' });
 };
 
+// @desc    Search restaurants
+// @route   GET /api/restaurants/search
+// @access  Public
+const searchRestaurants = async (req, res) => {
+  const { q, location, cuisine } = req.query;
+  
+  try {
+    let query = {};
+    
+    // Search by name or description
+    if (q) {
+      query.$or = [
+        { name: { $regex: q, $options: 'i' } },
+        { description: { $regex: q, $options: 'i' } },
+        { cuisines: { $regex: q, $options: 'i' } }
+      ];
+    }
+    
+    // Filter by cuisine
+    if (cuisine) {
+      query.cuisines = { $regex: cuisine, $options: 'i' };
+    }
+    
+    // Search by location (if coordinates provided)
+    if (location && location.includes(',')) {
+      const [lat, lng] = location.split(',').map(coord => parseFloat(coord.trim()));
+      if (!isNaN(lat) && !isNaN(lng)) {
+        query.location = {
+          $near: {
+            $geometry: { type: "Point", coordinates: [lng, lat] },
+            $maxDistance: 10000, // 10km radius
+          },
+        };
+      }
+    }
+    
+    const restaurants = await Restaurant.find(query).limit(20);
+    res.json(restaurants);
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ message: 'Search failed' });
+  }
+};
+
 module.exports = {
   createRestaurant,
   getRestaurants,
   getRestaurant,
   updateRestaurant,
   deleteRestaurant,
+  searchRestaurants,
 };

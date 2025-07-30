@@ -1,100 +1,143 @@
 "use client";
-
+import { useState } from "react";
 import {
   Dialog,
-  DialogContent,
   DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "../ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Label } from "../ui/label";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useState } from "react";
+// @ts-ignore
+import API from "../../api/axios.js";
+import { toast } from "sonner";
+import { useAuth } from "../../context/AuthContext";
 
 export default function AuthDialog() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const { login } = useAuth();
 
-  const handleLogin = () => {
-    console.log("Logging in:", { email, password });
-    // send login request to backend
+  const handleRegister = async () => {
+    if (!name || !email || !password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      const res = await API.post("/auth/register", {
+        name,
+        email,
+        password,
+      });
+      toast.success("Registered successfully!");
+      console.log(res.data);
+      // Auto-login after successful registration
+      const { token, name: userName, email: userEmail, role, _id } = res.data;
+      login({ _id, name: userName, email: userEmail, role }, token);
+      setIsOpen(false);
+    } catch (err: any) {
+      console.error(err.response?.data || err.message);
+      toast.error(err.response?.data?.message || "Registration failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRegister = () => {
-    console.log("Registering:", { email, password });
-    // send register request to backend
+  const handleLogin = async () => {
+    if (!email || !password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      const res = await API.post("/auth/login", {
+        email,
+        password,
+      });
+
+      const { token, name: userName, email: userEmail, role, _id } = res.data;
+
+      login({ _id, name: userName, email: userEmail, role }, token);
+      toast.success(`Welcome back, ${userName}!`);
+      setIsOpen(false);
+    } catch (err: any) {
+      console.error(err.response?.data || err.message);
+      toast.error(err.response?.data?.message || "Login failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Login / Register</Button>
+        <Button className="text-white border-white/30 bg-gray-700 hover:bg-gray-600">
+          Sign In
+        </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-sm">
-        <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="register">Register</TabsTrigger>
+      <DialogContent className="bg-gray-900/95 backdrop-blur-sm border-gray-700 text-white">
+        <DialogHeader>
+          <DialogTitle className="text-center text-white">Welcome to LocalBites</DialogTitle>
+        </DialogHeader>
+
+        <Tabs defaultValue="login" className="w-full mt-4">
+          <TabsList className="grid grid-cols-2 bg-gray-800 border border-gray-700">
+            <TabsTrigger value="login" className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300">Login</TabsTrigger>
+            <TabsTrigger value="register" className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300">Register</TabsTrigger>
           </TabsList>
 
-          {/* Login Form */}
           <TabsContent value="login">
-            <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
-              <div className="space-y-4 py-4">
-                <div>
-                  <Label htmlFor="login-email">Email</Label>
-                  <Input
-                    id="login-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="login-password">Password</Label>
-                  <Input
-                    id="login-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-              <Button type="submit" className="w-full">
-                Login
+            <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4 mt-4">
+              <Input
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-gray-600 focus:ring-gray-600"
+              />
+              <Input
+                placeholder="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-gray-600 focus:ring-gray-600"
+              />
+              <Button type="submit" className="w-full bg-gray-700 text-white hover:bg-gray-600 border border-gray-600" disabled={isLoading}>
+                {isLoading ? "Logging in..." : "Login"}
               </Button>
             </form>
           </TabsContent>
 
-          {/* Register Form */}
           <TabsContent value="register">
-            <form onSubmit={(e) => { e.preventDefault(); handleRegister(); }}>
-              <div className="space-y-4 py-4">
-                <div>
-                  <Label htmlFor="register-email">Email</Label>
-                  <Input
-                    id="register-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="register-password">Password</Label>
-                  <Input
-                    id="register-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-              <Button type="submit" className="w-full">
-                Register
+            <form onSubmit={(e) => { e.preventDefault(); handleRegister(); }} className="space-y-4 mt-4">
+              <Input
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-gray-600 focus:ring-gray-600"
+              />
+              <Input
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-gray-600 focus:ring-gray-600"
+              />
+              <Input
+                placeholder="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-gray-600 focus:ring-gray-600"
+              />
+              <Button type="submit" className="w-full bg-gray-700 text-white hover:bg-gray-600 border border-gray-600" disabled={isLoading}>
+                {isLoading ? "Registering..." : "Register"}
               </Button>
             </form>
           </TabsContent>

@@ -1,19 +1,36 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useNavigate } from "react-router-dom";
-import { Search, Send, Hand, Utensils, Coffee, MapPin, Pizza, ChefHat, Sandwich, Cake, Lightbulb, Map, Clock, Star } from "lucide-react";
+import { Search, Hand, Utensils, Coffee, MapPin, Pizza, Sandwich, Cake, Lightbulb, Map, Star } from "lucide-react";
 import { useState } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import { toast } from "sonner";
 
 const HeroSection = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
-  const handleSearch = () => {
-    if (searchQuery.trim() || location.trim()) {
-      // Navigate to explore page with search parameters
-      navigate(`/explore?q=${encodeURIComponent(searchQuery)}&location=${encodeURIComponent(location)}`);
+  const handleSearch = async () => {
+    if (!searchQuery.trim() && !location.trim()) {
+      toast.error("Please enter a search query or location");
+      return;
+    }
+    
+    setIsSearching(true);
+    try {
+      // Navigate to search results page with query parameters
+      const params = new URLSearchParams();
+      if (searchQuery.trim()) params.set('q', searchQuery.trim());
+      if (location.trim()) params.set('location', location.trim());
+      
+      navigate(`/search?${params.toString()}`);
+    } catch (error) {
+      console.error('Search error:', error);
+      toast.error('Search failed. Please try again.');
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -33,10 +50,6 @@ const HeroSection = () => {
     } else {
       setLocation("Geolocation not supported");
     }
-  };
-
-  const handleQuickSearch = (query: string) => {
-    setSearchQuery(query);
   };
 
   // Keyboard shortcuts
@@ -118,11 +131,21 @@ const HeroSection = () => {
               {/* Search Button */}
               <Button 
                 onClick={handleSearch}
-                className="ml-4 bg-black hover:bg-gray-800 text-white px-6 py-2 rounded-lg transition-all duration-200 hover:scale-105"
+                disabled={isSearching}
+                className="ml-4 bg-black hover:bg-gray-800 text-white px-6 py-2 rounded-lg transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Search for restaurants and food"
               >
-                <Search className="w-5 h-5 mr-2" />
-                Search
+                {isSearching ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Searching...
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-5 h-5 mr-2" />
+                    Search
+                  </>
+                )}
               </Button>
             </div>
           </div>
@@ -138,30 +161,6 @@ const HeroSection = () => {
             >
               <MapPin className="w-3 h-3 mr-1" />
               Use My Location
-            </Button>
-            <Button 
-              onClick={() => handleQuickSearch("popular restaurants")}
-              variant="outline" 
-              size="sm" 
-              className="bg-white/10 border-white/20 text-white hover:bg-white/30 hover:border-white/40 hover:scale-105 backdrop-blur-sm transition-all duration-200"
-            >
-              Popular Near Me
-            </Button>
-            <Button 
-              onClick={() => handleQuickSearch("open now")}
-              variant="outline" 
-              size="sm" 
-              className="bg-white/10 border-white/20 text-white hover:bg-white/30 hover:border-white/40 hover:scale-105 backdrop-blur-sm transition-all duration-200"
-            >
-              Open Now
-            </Button>
-            <Button 
-              onClick={() => handleQuickSearch("delivery")}
-              variant="outline" 
-              size="sm" 
-              className="bg-white/10 border-white/20 text-white hover:bg-white/30 hover:border-white/40 hover:scale-105 backdrop-blur-sm transition-all duration-200"
-            >
-              Delivery Available
             </Button>
           </div>
         </div>
@@ -207,11 +206,11 @@ const HeroSection = () => {
                   
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Clock className="w-3 h-3 text-purple-400" />
+                      <Utensils className="w-3 h-3 text-purple-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-200">Check Hours</p>
-                      <p className="text-xs text-gray-400">Use "Open Now" filter to find places currently serving</p>
+                      <p className="text-sm font-medium text-gray-200">Quick Categories</p>
+                      <p className="text-xs text-gray-400">Click on category icons below for instant food type searches</p>
                     </div>
                   </div>
                   
@@ -220,8 +219,8 @@ const HeroSection = () => {
                       <Star className="w-3 h-3 text-yellow-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-200">Popular Picks</p>
-                      <p className="text-xs text-gray-400">Try "Popular Near Me" to discover trending local favorites</p>
+                      <p className="text-sm font-medium text-gray-200">Explore Regions</p>
+                      <p className="text-xs text-gray-400">Discover handpicked places by region for curated experiences</p>
                     </div>
                   </div>
                 </div>
@@ -240,7 +239,7 @@ const HeroSection = () => {
         <div className="flex gap-6 mb-8 flex-wrap justify-center">
           {/* Restaurant */}
           <div 
-            onClick={() => handleQuickSearch("restaurant")}
+            onClick={() => setSearchQuery("restaurant")}
             className="flex flex-col items-center gap-3 cursor-pointer group"
           >
             <div className="relative w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-white/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-gray-700 group-hover:to-gray-800 group-hover:border-white/50 group-hover:shadow-lg group-hover:shadow-white/10">
@@ -253,7 +252,7 @@ const HeroSection = () => {
 
           {/* Cafe */}
           <div 
-            onClick={() => handleQuickSearch("cafe")}
+            onClick={() => setSearchQuery("cafe")}
             className="flex flex-col items-center gap-3 cursor-pointer group"
           >
             <div className="relative w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-white/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-gray-700 group-hover:to-gray-800 group-hover:border-white/50 group-hover:shadow-lg group-hover:shadow-white/10">
@@ -266,7 +265,7 @@ const HeroSection = () => {
 
           {/* Fast Food */}
           <div 
-            onClick={() => handleQuickSearch("fast food")}
+            onClick={() => setSearchQuery("fast food")}
             className="flex flex-col items-center gap-3 cursor-pointer group"
           >
             <div className="relative w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-white/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-gray-700 group-hover:to-gray-800 group-hover:border-white/50 group-hover:shadow-lg group-hover:shadow-white/10">
@@ -279,7 +278,7 @@ const HeroSection = () => {
 
           {/* Pizza */}
           <div 
-            onClick={() => handleQuickSearch("pizza")}
+            onClick={() => setSearchQuery("pizza")}
             className="flex flex-col items-center gap-3 cursor-pointer group"
           >
             <div className="relative w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-white/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-gray-700 group-hover:to-gray-800 group-hover:border-white/50 group-hover:shadow-lg group-hover:shadow-white/10">
@@ -292,7 +291,7 @@ const HeroSection = () => {
 
           {/* Desserts */}
           <div 
-            onClick={() => handleQuickSearch("desserts")}
+            onClick={() => setSearchQuery("desserts")}
             className="flex flex-col items-center gap-3 cursor-pointer group"
           >
             <div className="relative w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-white/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-gray-700 group-hover:to-gray-800 group-hover:border-white/50 group-hover:shadow-lg group-hover:shadow-white/10">

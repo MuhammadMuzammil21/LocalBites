@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Restaurant = require("../models/Restaurant");
+const { searchRestaurants } = require("../controllers/restaurantController");
+
+// GET /api/restaurants/search
+router.get("/search", searchRestaurants);
 
 // GET /api/restaurants/geojson
 router.get("/geojson", async (req, res) => {
