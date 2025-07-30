@@ -55,4 +55,7 @@ const restaurantSchema = new mongoose.Schema(
 // Geospatial index for map features
 restaurantSchema.index({ location: '2dsphere' });
 
+// Text index for better search performance
+restaurantSchema.index({ name: 'text', description: 'text', cuisines: 'text' });
+
 module.exports = mongoose.model('Restaurant', restaurantSchema);

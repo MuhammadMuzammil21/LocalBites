@@ -93,43 +93,46 @@ const deleteRestaurant = async (req, res) => {
 // @route   GET /api/restaurants/search
 // @access  Public
 const searchRestaurants = async (req, res) => {
-  const { q, location, cuisine } = req.query;
-  
   try {
-    let query = {};
-    
-    // Search by name or description
+    const { q, location, cuisine } = req.query;
+    const query = {};
+
+    // Full-text or partial string search
     if (q) {
+      const regex = new RegExp(q, 'i'); // case-insensitive
       query.$or = [
-        { name: { $regex: q, $options: 'i' } },
-        { description: { $regex: q, $options: 'i' } },
-        { cuisines: { $regex: q, $options: 'i' } }
+        { name: regex },
+        { description: regex },
+        { cuisines: regex }
       ];
     }
-    
-    // Filter by cuisine
+
+    // Cuisine filtering
     if (cuisine) {
-      query.cuisines = { $regex: cuisine, $options: 'i' };
+      query.cuisines = { $regex: new RegExp(cuisine, 'i') };
     }
-    
-    // Search by location (if coordinates provided)
-    if (location && location.includes(',')) {
-      const [lat, lng] = location.split(',').map(coord => parseFloat(coord.trim()));
+
+    // Location-based filtering (geo query)
+    if (location) {
+      const [lat, lng] = location.split(',').map(Number);
       if (!isNaN(lat) && !isNaN(lng)) {
         query.location = {
           $near: {
-            $geometry: { type: "Point", coordinates: [lng, lat] },
-            $maxDistance: 10000, // 10km radius
-          },
+            $geometry: {
+              type: "Point",
+              coordinates: [lng, lat] // Note: [lng, lat]
+            },
+            $maxDistance: 10000 // 10km default radius
+          }
         };
       }
     }
-    
-    const restaurants = await Restaurant.find(query).limit(20);
+
+    const restaurants = await Restaurant.find(query).limit(50);
     res.json(restaurants);
-  } catch (error) {
-    console.error('Search error:', error);
-    res.status(500).json({ message: 'Search failed' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error during restaurant search' });
   }
 };
 

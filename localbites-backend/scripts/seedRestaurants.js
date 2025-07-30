@@ -32,10 +32,19 @@ const seedRestaurants = async () => {
         const cuisineRaw = f.properties?.cuisine;
         const cuisines = cuisineRaw ? cuisineRaw.split(';').map((c) => c.trim()) : [];
 
+        // Generate a more descriptive description based on cuisine
+        const generateDescription = (name, cuisines) => {
+          if (cuisines.length === 0) {
+            return `Experience authentic flavors at ${name}`;
+          }
+          const cuisineList = cuisines.join(', ');
+          return `Serving delicious ${cuisineList} cuisine at ${name}`;
+        };
+
         return {
           name,
           slug: slugify(name, { lower: true }),
-          description: 'Imported from OpenStreetMap.',
+          description: generateDescription(name, cuisines),
           cuisines,
           address: {
             street: f.properties?.['addr:street'] || 'Unknown Street',

@@ -1,7 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const Restaurant = require("../models/Restaurant");
-const { searchRestaurants } = require("../controllers/restaurantController");
+const { 
+  searchRestaurants, 
+  getRestaurants, 
+  getRestaurant, 
+  createRestaurant, 
+  updateRestaurant, 
+  deleteRestaurant 
+} = require("../controllers/restaurantController");
 
 // GET /api/restaurants/search
 router.get("/search", searchRestaurants);
@@ -47,15 +54,18 @@ router.get("/nearby", async (req, res) => {
 });
 
 // GET /api/restaurants - Get all restaurants
-router.get("/", async (req, res) => {
-  try {
-    const restaurants = await Restaurant.find();
-    res.json(restaurants);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch restaurants" });
-  }
-});
+router.get("/", getRestaurants);
 
+// GET /api/restaurants/:idOrSlug - Get single restaurant
+router.get("/:idOrSlug", getRestaurant);
 
+// POST /api/restaurants - Create restaurant (protected)
+router.post("/", createRestaurant);
+
+// PUT /api/restaurants/:id - Update restaurant (protected)
+router.put("/:id", updateRestaurant);
+
+// DELETE /api/restaurants/:id - Delete restaurant (admin only)
+router.delete("/:id", deleteRestaurant);
 
 module.exports = router;

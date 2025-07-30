@@ -7,42 +7,13 @@ import { Badge } from '../components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { toast } from 'sonner';
 import Navbar from '../components/layout/Navbar';
-
-// Dummy restaurant data for testing
-const dummyRestaurants = [
-  {
-    _id: '1',
-    name: 'Spicy Kitchen',
-    description: 'Authentic Pakistani cuisine with a modern twist',
-    cuisines: ['Pakistani', 'Desi'],
-    address: 'Fatima Jinnah Road, Karachi',
-    phone: '+92-21-1234567',
-    avg_rating: 4.5
-  },
-  {
-    _id: '2',
-    name: 'Pizza Palace',
-    description: 'Best Italian pizza in town',
-    cuisines: ['Italian', 'Pizza'],
-    address: 'Clifton, Karachi',
-    phone: '+92-21-2345678',
-    avg_rating: 4.2
-  },
-  {
-    _id: '3',
-    name: 'Burger House',
-    description: 'Juicy burgers and crispy fries',
-    cuisines: ['Fast Food', 'Burgers'],
-    address: 'Gulshan-e-Iqbal, Karachi',
-    phone: '+92-21-3456789',
-    avg_rating: 4.0
-  }
-];
+import { restaurantApi } from '../api/restaurantApi';
+import type { Restaurant } from '../api/restaurantApi';
 
 const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [restaurants, setRestaurants] = useState(dummyRestaurants);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [location, setLocation] = useState(searchParams.get('location') || '');
@@ -54,31 +25,33 @@ const SearchResults = () => {
     'Burgers', 'Pizza', 'Desserts', 'Cafe', 'Seafood'
   ];
 
-  const handleSearch = () => {
+  useEffect(() => {
+    handleSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSearch = async () => {
     const newParams = new URLSearchParams();
     if (searchQuery) newParams.set('q', searchQuery);
     if (location) newParams.set('location', location);
     if (selectedCuisine && selectedCuisine !== 'All') newParams.set('cuisine', selectedCuisine);
+
     setSearchParams(newParams);
-    
-    // Simple client-side filtering for now
-    let filtered = dummyRestaurants;
-    
-    if (searchQuery) {
-      filtered = filtered.filter(r => 
-        r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        r.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        r.cuisines.some(c => c.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+    setLoading(true);
+
+    try {
+      const data = await restaurantApi.search({
+        q: searchQuery,
+        location,
+        cuisine: selectedCuisine !== 'All' ? selectedCuisine : undefined
+      });
+      setRestaurants(data);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to fetch search results');
+    } finally {
+      setLoading(false);
     }
-    
-    if (selectedCuisine && selectedCuisine !== 'All') {
-      filtered = filtered.filter(r => 
-        r.cuisines.some(c => c.toLowerCase().includes(selectedCuisine.toLowerCase()))
-      );
-    }
-    
-    setRestaurants(filtered);
   };
 
   const handleCuisineFilter = (cuisine: string) => {
@@ -91,15 +64,8 @@ const SearchResults = () => {
     }
     setSearchParams(newParams);
     
-    // Filter restaurants
-    if (cuisine === 'All') {
-      setRestaurants(dummyRestaurants);
-    } else {
-      const filtered = dummyRestaurants.filter(r => 
-        r.cuisines.some(c => c.toLowerCase().includes(cuisine.toLowerCase()))
-      );
-      setRestaurants(filtered);
-    }
+    // Trigger new search with updated cuisine filter
+    handleSearch();
   };
 
   const sortedRestaurants = [...restaurants].sort((a, b) => {
@@ -212,7 +178,9 @@ const SearchResults = () => {
             )}
           </div>
 
-          {restaurants.length === 0 ? (
+          {loading ? (
+            <div className="text-center text-white py-10">Loading restaurants...</div>
+          ) : restaurants.length === 0 ? (
             <div className="text-center py-12">
               <Search className="w-12 h-12 text-gray-600 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-white mb-2">No restaurants found</h3>
@@ -267,7 +235,12 @@ const SearchResults = () => {
                       {restaurant.address && (
                         <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4" />
-                          <span className="truncate">{restaurant.address}</span>
+                          <span className="truncate">
+                            {typeof restaurant.address === 'string' 
+                              ? restaurant.address 
+                              : `${restaurant.address.street || ''} ${restaurant.address.city || ''} ${restaurant.address.country || ''}`.trim()
+                            }
+                          </span>
                         </div>
                       )}
                       {restaurant.phone && (
