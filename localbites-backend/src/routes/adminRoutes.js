@@ -1,7 +1,7 @@
 const express = require('express');
 const { getAllOrders, updateOrderStatus } = require('../controllers/orderController');
 const { protect, authorize } = require('../middleware/authMiddleware');
-const { getAllUsers, updateUserStatus } = require('../controllers/authController');
+const { getAllUsers, updateUserStatus, deleteUser } = require('../controllers/authController');
 const { getAllRestaurants, updateRestaurantStatus } = require('../controllers/restaurantController');
 const {
     getStats,
@@ -25,6 +25,7 @@ router.get('/stats/top-restaurants', protect, authorize('ADMIN'), getTopRestaura
 // User management routes
 router.get('/users', protect, authorize('ADMIN'), getAllUsers);
 router.put('/users/:id/status', protect, authorize('ADMIN'), updateUserStatus);
+router.delete('/users/:id', protect, authorize('ADMIN'), deleteUser);
 
 // Order management routes
 router.get('/orders', protect, authorize('ADMIN'), getAllOrders);

@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
       enum: ['USER', 'OWNER', 'ADMIN'],
       default: 'USER',
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     addresses: [
       {
         label: {

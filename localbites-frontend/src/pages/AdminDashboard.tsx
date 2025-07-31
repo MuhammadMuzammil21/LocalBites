@@ -7,7 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
 import Navbar from '../components/layout/Navbar';
-import { adminApi } from '../api/adminApi';
+import { adminApi, User, AdminStats } from '../api/adminApi';
+import { Order } from '../api/orderApi';
+import { Restaurant } from '../api/restaurantApi';
 import { useAuth } from '../context/AuthContext';
 import { useAuthDialog } from '../context/AuthDialogContext';
 
@@ -16,7 +18,7 @@ const AdminDashboard = () => {
   const { user, isAuthenticated } = useAuth();
   const { openAuthDialog } = useAuthDialog();
   
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<AdminStats>({
     totalOrders: 0,
     totalRevenue: 0,
     totalRestaurants: 0,
@@ -25,9 +27,10 @@ const AdminDashboard = () => {
     revenueToday: 0,
     averageOrderValue: 0,
     topRestaurants: []
-  });
-  const [orders, setOrders] = useState([]);
-  const [restaurants, setRestaurants] = useState([]);
+  } as AdminStats);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -46,24 +49,38 @@ const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [statsData, ordersData, restaurantsData] = await Promise.all([
-        adminApi.getStats().catch(() => ({
-          totalOrders: 0,
-          totalRevenue: 0,
-          totalRestaurants: 0,
-          totalUsers: 0,
-          ordersToday: 0,
-          revenueToday: 0,
-          averageOrderValue: 0,
-          topRestaurants: []
-        })),
-        adminApi.getAllOrders(1, 10).catch(() => ({ orders: [], pagination: {} })),
-        adminApi.getAllRestaurants(1, 10).catch(() => ({ restaurants: [], pagination: {} }))
+      const [statsData, ordersData, restaurantsData, usersData] = await Promise.all([
+        adminApi.getStats().catch((error) => {
+          console.error('Error fetching stats:', error);
+          return {
+            totalOrders: 0,
+            totalRevenue: 0,
+            totalRestaurants: 0,
+            totalUsers: 0,
+            ordersToday: 0,
+            revenueToday: 0,
+            averageOrderValue: 0,
+            topRestaurants: []
+          } as AdminStats;
+        }),
+        adminApi.getAllOrders(1, 10).catch((error) => {
+          console.error('Error fetching orders:', error);
+          return { orders: [], pagination: { page: 1, limit: 10, total: 0, pages: 1 } };
+        }),
+        adminApi.getAllRestaurants(1, 10).catch((error) => {
+          console.error('Error fetching restaurants:', error);
+          return { restaurants: [], pagination: { page: 1, limit: 10, total: 0, pages: 1 } };
+        }),
+        adminApi.getAllUsers(1, 10).catch((error) => {
+          console.error('Error fetching users:', error);
+          return { users: [], pagination: { page: 1, limit: 10, total: 0, pages: 1 } };
+        })
       ]);
 
       setStats(statsData);
       setOrders(ordersData.orders || []);
       setRestaurants(restaurantsData.restaurants || []);
+      setUsers(usersData.users || []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       toast.error('Failed to load dashboard data');
@@ -91,6 +108,32 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error updating restaurant status:', error);
       toast.error('Failed to update restaurant status');
+    }
+  };
+
+  const handleDeactivateUser = async (userId: string, isActive: boolean) => {
+    try {
+      await adminApi.updateUserStatus(userId, isActive);
+      toast.success(`User ${isActive ? 'activated' : 'deactivated'} successfully`);
+      fetchDashboardData(); // Refresh data
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      toast.error(`Failed to ${isActive ? 'activate' : 'deactivate'} user`);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    if (!confirm(`Are you sure you want to delete user "${userName}"? This action cannot be undone.`)) {
+      return;
+    }
+    
+    try {
+      await adminApi.deleteUser(userId);
+      toast.success(`User "${userName}" deleted successfully`);
+      fetchDashboardData(); // Refresh data
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast.error('Failed to delete user');
     }
   };
 
@@ -139,7 +182,7 @@ const AdminDashboard = () => {
 
         <div className="max-w-7xl mx-auto px-4 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-800 border-gray-700">
+            <TabsList className="grid w-full grid-cols-5 bg-gray-800 border-gray-700">
               <TabsTrigger value="overview" className="text-white data-[state=active]:bg-white data-[state=active]:text-black">
                 📊 Overview
               </TabsTrigger>
@@ -148,6 +191,9 @@ const AdminDashboard = () => {
               </TabsTrigger>
               <TabsTrigger value="restaurants" className="text-white data-[state=active]:bg-white data-[state=active]:text-black">
                 🍽️ Restaurants
+              </TabsTrigger>
+              <TabsTrigger value="users" className="text-white data-[state=active]:bg-white data-[state=active]:text-black">
+                👥 Users
               </TabsTrigger>
               <TabsTrigger value="analytics" className="text-white data-[state=active]:bg-white data-[state=active]:text-black">
                 📈 Analytics
@@ -413,6 +459,92 @@ const AdminDashboard = () => {
                               🍽️ View Menu
                             </Button>
                           </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Users Tab */}
+            <TabsContent value="users" className="space-y-6">
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    👥 Registered Users
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {users.length === 0 ? (
+                    <div className="text-center py-8">
+                      <div className="text-4xl mb-4">👥</div>
+                      <p className="text-gray-400">No users found</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {users.map((user: any) => (
+                        <div key={user._id} className="p-4 bg-gray-700 rounded-lg">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center">
+                                <span className="text-white font-bold">
+                                  {user.name.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-white">{user.name}</h3>
+                                <p className="text-gray-400 text-sm">{user.email}</p>
+                              </div>
+                            </div>
+                                                         <div className="flex items-center gap-2">
+                               <Badge className={user.role === 'ADMIN' ? "bg-purple-600" : user.role === 'OWNER' ? "bg-blue-600" : "bg-gray-600"}>
+                                 {user.role}
+                               </Badge>
+                               <Badge className={user.isActive ? "bg-green-600" : "bg-red-600"}>
+                                 {user.isActive ? 'Active' : 'Inactive'}
+                               </Badge>
+                             </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <p className="text-gray-400">Joined</p>
+                              <p className="text-white">
+                                {new Date(user.createdAt).toLocaleDateString()} at {new Date(user.createdAt).toLocaleTimeString()}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-gray-400">Last Updated</p>
+                              <p className="text-white">
+                                {new Date(user.updatedAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+
+                          <Separator className="bg-gray-600 my-3" />
+
+                                                     <div className="flex gap-2">
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => handleDeleteUser(user._id, user.name)}
+                               className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
+                             >
+                               Delete User
+                             </Button>
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => handleDeactivateUser(user._id, !user.isActive)}
+                               className={user.isActive 
+                                 ? "border-red-600 text-red-400 hover:bg-red-600 hover:text-white" 
+                                 : "border-green-600 text-green-400 hover:bg-green-600 hover:text-white"
+                               }
+                             >
+                               {user.isActive ? 'Deactivate' : 'Activate'}
+                             </Button>
+                           </div>
                         </div>
                       ))}
                     </div>

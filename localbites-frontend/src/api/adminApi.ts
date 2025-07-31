@@ -34,6 +34,7 @@ export interface User {
   name: string;
   email: string;
   role: 'USER' | 'OWNER' | 'ADMIN';
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -149,13 +150,19 @@ export const adminApi = {
       pages: number;
     };
   }> => {
-    const response = await API.get(`/auth/users?page=${page}&limit=${limit}`);
+    const response = await API.get(`/admin/users?page=${page}&limit=${limit}`);
     return response.data.success ? response.data.data : response.data;
   },
 
   // Update user status
   updateUserStatus: async (userId: string, isActive: boolean): Promise<void> => {
-    const response = await API.put(`/auth/users/${userId}/status`, { isActive });
+    const response = await API.put(`/admin/users/${userId}/status`, { isActive });
+    return response.data;
+  },
+
+  // Delete user (admin only)
+  deleteUser: async (userId: string): Promise<void> => {
+    const response = await API.delete(`/admin/users/${userId}`);
     return response.data;
   },
 };

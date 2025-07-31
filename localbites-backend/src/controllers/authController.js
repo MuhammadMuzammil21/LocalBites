@@ -248,6 +248,34 @@ const updateUserStatus = async (req, res) => {
   }
 };
 
+// DELETE /api/auth/users/:id (Admin only)
+const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Prevent admin from deleting themselves
+    if (user._id.toString() === req.user.id) {
+      return res.status(400).json({ success: false, message: 'Cannot delete your own account' });
+    }
+
+    // Prevent deletion of other admins (optional security measure)
+    if (user.role === 'ADMIN') {
+      return res.status(400).json({ success: false, message: 'Cannot delete admin accounts' });
+    }
+
+    await User.findByIdAndDelete(req.params.id);
+
+    res.json({ success: true, message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ success: false, message: 'Error deleting user' });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -258,4 +286,5 @@ module.exports = {
   changePassword,
   getAllUsers,
   updateUserStatus,
+  deleteUser,
 };
