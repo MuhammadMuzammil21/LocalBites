@@ -1,6 +1,7 @@
 import { Button } from '../components/ui/button';
 import Navbar from '../components/layout/Navbar';
 import { useNavigate } from 'react-router-dom';
+import { Utensils, MapPin, Star } from 'lucide-react';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const Home = () => {
             <Button 
               onClick={() => navigate('/map')}
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-black px-8 py-3 text-lg rounded-lg transition-all duration-200 hover:scale-105"
+              className="border-white text-black hover:bg-white hover:text-black px-8 py-3 text-lg rounded-lg transition-all duration-200 hover:scale-105"
             >
               View Map
             </Button>
@@ -49,7 +50,9 @@ const Home = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center p-6 bg-gray-800 rounded-xl border border-gray-700 hover:border-gray-600 transition-colors">
-              <div className="text-4xl mb-4">🍽️</div>
+              <div className="flex justify-center mb-4">
+                <Utensils className="w-12 h-12 text-gray-300" />
+              </div>
               <h3 className="text-xl font-semibold text-white mb-3">Curated Selection</h3>
               <p className="text-gray-400">
                 Handpicked restaurants and cafes across Karachi, ensuring quality and authenticity.
@@ -57,7 +60,9 @@ const Home = () => {
             </div>
             
             <div className="text-center p-6 bg-gray-800 rounded-xl border border-gray-700 hover:border-gray-600 transition-colors">
-              <div className="text-4xl mb-4">📍</div>
+              <div className="flex justify-center mb-4">
+                <MapPin className="w-12 h-12 text-gray-300" />
+              </div>
               <h3 className="text-xl font-semibold text-white mb-3">Location Based</h3>
               <p className="text-gray-400">
                 Find restaurants near you with our interactive map and location-based search.
@@ -65,7 +70,9 @@ const Home = () => {
             </div>
             
             <div className="text-center p-6 bg-gray-800 rounded-xl border border-gray-700 hover:border-gray-600 transition-colors">
-              <div className="text-4xl mb-4">⭐</div>
+              <div className="flex justify-center mb-4">
+                <Star className="w-12 h-12 text-gray-300" />
+              </div>
               <h3 className="text-xl font-semibold text-white mb-3">Verified Reviews</h3>
               <p className="text-gray-400">
                 Authentic reviews from real customers to help you make the best dining choices.

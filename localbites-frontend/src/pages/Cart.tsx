@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import Navbar from '../components/layout/Navbar';
 import { cartApi, Cart as CartType, CartItem } from '../api/cartApi';
 import { useAuth } from '../context/AuthContext';
+import { ShoppingCart, Trash2, Loader2, ClipboardList, Rocket } from 'lucide-react';
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -95,7 +96,7 @@ const Cart = () => {
         <Navbar />
         <div className="pt-16 flex items-center justify-center min-h-screen">
           <div className="text-center text-white">
-            <div className="inline-block w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+            <Loader2 className="w-8 h-8 animate-spin mb-4 mx-auto" />
             <p>Loading your cart...</p>
           </div>
         </div>
@@ -112,7 +113,8 @@ const Cart = () => {
         <div className="bg-gray-900 border-b border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-6">
             <h1 className="text-3xl font-bold text-white flex items-center gap-2">
-              🛒 Your Cart
+              <ShoppingCart className="w-8 h-8" />
+              Your Cart
             </h1>
           </div>
         </div>
@@ -120,7 +122,9 @@ const Cart = () => {
         <div className="max-w-7xl mx-auto px-4 py-8">
           {!cart || cart.items.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">🛒</div>
+              <div className="flex justify-center mb-4">
+                <ShoppingCart className="w-16 h-16 text-gray-400" />
+              </div>
               <h2 className="text-2xl font-bold text-white mb-2">Your cart is empty</h2>
               <p className="text-gray-400 mb-6">Add some delicious items from our restaurants!</p>
               <Button 
@@ -144,7 +148,8 @@ const Cart = () => {
                     className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
                     size="sm"
                   >
-                    🗑️ Clear Cart
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Clear Cart
                   </Button>
                 </div>
 
@@ -206,9 +211,9 @@ const Cart = () => {
                             className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
                           >
                             {updating === item.menuItem._id ? (
-                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                              <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
-                              '🗑️'
+                              <Trash2 className="w-4 h-4" />
                             )}
                           </Button>
                         </div>
@@ -223,7 +228,8 @@ const Cart = () => {
                 <Card className="bg-gray-800 border-gray-700 sticky top-24">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
-                      📋 Order Summary
+                      <ClipboardList className="w-5 h-5" />
+                      Order Summary
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -252,7 +258,8 @@ const Cart = () => {
                       className="w-full bg-white text-black hover:bg-gray-200"
                       size="lg"
                     >
-                      🚀 Proceed to Checkout
+                      <Rocket className="w-4 h-4 mr-2" />
+                      Proceed to Checkout
                     </Button>
 
                     <div className="text-center">

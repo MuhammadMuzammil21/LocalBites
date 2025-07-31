@@ -7,6 +7,7 @@ import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
 import Navbar from '../components/layout/Navbar';
 import { restaurantApi, Restaurant } from '../api/restaurantApi';
+import { Map as MapIcon, Building2, MapPin, Phone, Star, DollarSign, Utensils, Search } from 'lucide-react';
 
 const Map = () => {
   const navigate = useNavigate();
@@ -120,7 +121,8 @@ const Map = () => {
         <div className="bg-gray-900 border-b border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-6">
             <h1 className="text-3xl font-bold text-white flex items-center gap-2 mb-4">
-              🗺️ Restaurants Map - Karachi
+              <MapIcon className="w-8 h-8" />
+              Restaurants Map - Karachi
             </h1>
             
             {/* Search and Filters */}
@@ -161,7 +163,8 @@ const Map = () => {
               <Card className="bg-gray-800 border-gray-700 mb-6">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
-                    🏙️ Karachi Areas
+                    <Building2 className="w-5 h-5" />
+                    Karachi Areas
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -175,11 +178,13 @@ const Map = () => {
                           onClick={() => setSearchQuery(area.name)}
                         >
                           <h3 className="font-semibold text-white mb-1">{area.name}</h3>
-                          <p className="text-sm text-gray-300">
-                            📍 {area.lat.toFixed(4)}, {area.lng.toFixed(4)}
+                          <p className="text-sm text-gray-300 flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {area.lat.toFixed(4)}, {area.lng.toFixed(4)}
                           </p>
-                          <p className="text-sm text-gray-400 mt-2">
-                            🍽️ {restaurantCount} restaurants
+                          <p className="text-sm text-gray-400 mt-2 flex items-center gap-1">
+                            <Utensils className="w-3 h-3" />
+                            {restaurantCount} restaurants
                           </p>
                         </div>
                       );
@@ -196,7 +201,9 @@ const Map = () => {
                 
                 {filteredRestaurants.length === 0 ? (
                   <div className="text-center py-8">
-                    <div className="text-4xl mb-4">🔍</div>
+                    <div className="flex justify-center mb-4">
+                    <Search className="w-12 h-12 text-gray-400" />
+                  </div>
                     <p className="text-gray-400">No restaurants found matching your criteria</p>
                   </div>
                 ) : (
@@ -216,7 +223,7 @@ const Map = () => {
                             <h3 className="font-semibold text-white">{restaurant.name}</h3>
                             {restaurant.avg_rating && (
                               <div className="flex items-center gap-1">
-                                <span className="text-yellow-400">⭐</span>
+                                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                                 <span className="text-sm text-white">
                                   {restaurant.avg_rating.toFixed(1)}
                                 </span>
@@ -237,7 +244,7 @@ const Map = () => {
                           <div className="space-y-1 text-sm text-gray-400">
                             {restaurant.address && (
                               <div className="flex items-center gap-2">
-                                <span>📍</span>
+                                <MapPin className="w-4 h-4" />
                                 <span className="truncate">
                                   {typeof restaurant.address === 'string' 
                                     ? restaurant.address 
@@ -248,7 +255,7 @@ const Map = () => {
                             )}
                             {restaurant.phone && (
                               <div className="flex items-center gap-2">
-                                <span>📞</span>
+                                <Phone className="w-4 h-4" />
                                 <span>{restaurant.phone}</span>
                               </div>
                             )}
@@ -267,7 +274,8 @@ const Map = () => {
                 <Card className="bg-gray-800 border-gray-700 sticky top-24">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
-                      🍽️ {selectedRestaurant.name}
+                      <Utensils className="w-5 h-5" />
+                      {selectedRestaurant.name}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -293,7 +301,7 @@ const Map = () => {
                     <div className="space-y-2 text-sm">
                       {selectedRestaurant.address && (
                         <div className="flex items-start gap-2">
-                          <span>📍</span>
+                          <MapPin className="w-4 h-4 mt-0.5" />
                           <span className="text-gray-300">
                             {typeof selectedRestaurant.address === 'string' 
                               ? selectedRestaurant.address 
@@ -304,13 +312,13 @@ const Map = () => {
                       )}
                       {selectedRestaurant.phone && (
                         <div className="flex items-center gap-2">
-                          <span>📞</span>
+                          <Phone className="w-4 h-4" />
                           <span className="text-gray-300">{selectedRestaurant.phone}</span>
                         </div>
                       )}
                       {selectedRestaurant.avg_rating && (
                         <div className="flex items-center gap-2">
-                          <span>⭐</span>
+                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                           <span className="text-gray-300">
                             {selectedRestaurant.avg_rating.toFixed(1)} ({selectedRestaurant.review_count} reviews)
                           </span>
@@ -318,7 +326,7 @@ const Map = () => {
                       )}
                       {selectedRestaurant.price_range && (
                         <div className="flex items-center gap-2">
-                          <span>💰</span>
+                          <DollarSign className="w-4 h-4" />
                           <span className="text-gray-300">{selectedRestaurant.price_range}</span>
                         </div>
                       )}
@@ -329,14 +337,16 @@ const Map = () => {
                         onClick={() => handleViewMenu(selectedRestaurant._id)}
                         className="w-full bg-white text-black hover:bg-gray-200"
                       >
-                        🍽️ View Menu
+                        <Utensils className="w-4 h-4 mr-2" />
+                        View Menu
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() => navigate(`/search?q=${selectedRestaurant.name}`)}
                         className="w-full border-gray-600 text-gray-300 hover:bg-gray-700"
                       >
-                        🔍 Search Similar
+                        <Search className="w-4 h-4 mr-2" />
+                        Search Similar
                       </Button>
                     </div>
                   </CardContent>
@@ -344,7 +354,9 @@ const Map = () => {
               ) : (
                 <Card className="bg-gray-800 border-gray-700">
                   <CardContent className="p-8 text-center">
-                    <div className="text-4xl mb-4">🗺️</div>
+                    <div className="flex justify-center mb-4">
+                      <MapIcon className="w-12 h-12 text-gray-400" />
+                    </div>
                     <h3 className="text-lg font-medium text-white mb-2">Select a Restaurant</h3>
                     <p className="text-gray-400 text-sm">
                       Click on any restaurant from the list to view details and location information.

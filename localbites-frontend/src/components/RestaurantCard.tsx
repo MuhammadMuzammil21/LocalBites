@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Star } from "lucide-react";
 
 type RestaurantCardProps = {
   id: string;
@@ -26,7 +27,10 @@ const RestaurantCard = ({
       <div className="p-4">
         <h3 className="text-xl font-bold">{name}</h3>
         <p className="text-gray-500 text-sm mt-1">{description}</p>
-        <p className="text-yellow-500 font-semibold mt-2">⭐ {rating}</p>
+        <div className="flex items-center gap-1 mt-2">
+          <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+          <span className="text-yellow-500 font-semibold">{rating}</span>
+        </div>
       </div>
     </div>
   );

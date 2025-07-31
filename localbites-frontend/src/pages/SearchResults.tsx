@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import Navbar from '../components/layout/Navbar';
 import { restaurantApi } from '../api/restaurantApi';
 import type { Restaurant } from '../api/restaurantApi';
+import { Search, MapPin, BarChart3, ChevronDown, Star, Phone, DollarSign, Loader2 } from 'lucide-react';
 
 const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,9 +46,8 @@ const SearchResults = () => {
         cuisine: selectedCuisine !== 'All' ? selectedCuisine : undefined
       });
       
-      // Handle both old and new API response formats
-      const data = response.data || response;
-      setRestaurants(Array.isArray(data) ? data : []);
+      // The search method returns Restaurant[] directly
+      setRestaurants(Array.isArray(response) ? response : []);
     } catch (err) {
       console.error(err);
       toast.error('Failed to fetch search results');
@@ -99,7 +99,9 @@ const SearchResults = () => {
               {/* Search Inputs */}
               <div className="flex-1 flex gap-4">
                 <div className="flex-1 relative">
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">🔍</div>
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <Search size={16} />
+                  </div>
                   <Input
                     type="text"
                     value={searchQuery}
@@ -110,7 +112,9 @@ const SearchResults = () => {
                   />
                 </div>
                 <div className="flex-1 relative">
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">📍</div>
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <MapPin size={16} />
+                  </div>
                   <Input
                     type="text"
                     value={location}
@@ -127,7 +131,7 @@ const SearchResults = () => {
 
               {/* Sort */}
               <div className="flex items-center gap-2">
-                <span className="text-gray-400 text-sm">📊</span>
+                <BarChart3 size={16} className="text-gray-400" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -145,7 +149,7 @@ const SearchResults = () => {
         <div className="bg-gray-900 border-b border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-4">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-gray-400 text-sm">🔽</span>
+              <ChevronDown size={16} className="text-gray-400" />
               <span className="text-sm font-medium text-gray-300">Cuisine:</span>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -183,12 +187,12 @@ const SearchResults = () => {
 
           {loading ? (
             <div className="text-center text-white py-10">
-              <div className="inline-block w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+              <Loader2 className="inline-block w-8 h-8 animate-spin mb-4" />
               <p>Loading restaurants...</p>
             </div>
           ) : restaurants.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">🔍</div>
+              <Search size={64} className="mx-auto mb-4 text-gray-400" />
               <h3 className="text-lg font-medium text-white mb-2">No restaurants found</h3>
               <p className="text-gray-400">Try adjusting your search criteria or explore different areas of Karachi</p>
             </div>
@@ -207,7 +211,7 @@ const SearchResults = () => {
                       </CardTitle>
                       {restaurant.avg_rating && (
                         <div className="flex items-center gap-1">
-                          <span className="text-yellow-400">⭐</span>
+                          <Star size={16} className="text-yellow-400 fill-current" />
                           <span className="text-sm font-medium text-white">
                             {restaurant.avg_rating.toFixed(1)}
                           </span>
@@ -240,7 +244,7 @@ const SearchResults = () => {
                     <div className="space-y-2 text-sm text-gray-400">
                       {restaurant.address && (
                         <div className="flex items-center gap-2">
-                          <span>📍</span>
+                          <MapPin size={14} />
                           <span className="truncate">
                             {typeof restaurant.address === 'string' 
                               ? restaurant.address 
@@ -251,13 +255,13 @@ const SearchResults = () => {
                       )}
                       {restaurant.phone && (
                         <div className="flex items-center gap-2">
-                          <span>📞</span>
+                          <Phone size={14} />
                           <span>{restaurant.phone}</span>
                         </div>
                       )}
                       {restaurant.price_range && (
                         <div className="flex items-center gap-2">
-                          <span>💰</span>
+                          <DollarSign size={14} />
                           <span>{restaurant.price_range}</span>
                         </div>
                       )}

@@ -10,6 +10,7 @@ import Navbar from '../components/layout/Navbar';
 import { cartApi, Cart as CartType } from '../api/cartApi';
 import { orderApi } from '../api/orderApi';
 import { useAuth } from '../context/AuthContext';
+import { ShoppingCart, MapPin, Loader2 } from 'lucide-react';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -137,7 +138,9 @@ const CheckoutPage = () => {
         <Navbar />
         <div className="pt-16 flex items-center justify-center min-h-screen">
           <div className="text-center text-white">
-            <div className="text-6xl mb-4">🛒</div>
+                          <div className="flex justify-center mb-4">
+                <ShoppingCart className="w-16 h-16 text-gray-400" />
+              </div>
             <h2 className="text-2xl font-bold mb-2">Your cart is empty</h2>
             <p className="text-gray-400 mb-6">Add some delicious items before checking out!</p>
             <Button 
@@ -166,7 +169,8 @@ const CheckoutPage = () => {
         <div className="bg-gray-900 border-b border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-6">
             <h1 className="text-3xl font-bold text-white flex items-center gap-2">
-              🛒 Checkout
+              <ShoppingCart className="w-8 h-8" />
+              Checkout
             </h1>
           </div>
         </div>
@@ -179,7 +183,8 @@ const CheckoutPage = () => {
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
-                    📍 Shipping Information
+                    <MapPin className="w-5 h-5" />
+                    Shipping Information
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">

@@ -6,10 +6,13 @@ import { Badge } from '../components/ui/badge';
 import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
 import Navbar from '../components/layout/Navbar';
-import { restaurantApi, Restaurant } from '../api/restaurantApi';
-import { menuApi, MenuItem } from '../api/menuApi';
+import { restaurantApi } from '../api/restaurantApi';
+import type { Restaurant } from '../api/restaurantApi';
+import { menuApi } from '../api/menuApi';
+import type { MenuItem } from '../api/menuApi';
 import { cartApi } from '../api/cartApi';
 import { useAuth } from '../context/AuthContext';
+import { MapPin, Phone, Star, DollarSign, ShoppingCart, Map, Utensils, Loader2 } from 'lucide-react';
 
 const Menu = () => {
   const { restaurantId } = useParams<{ restaurantId: string }>();
@@ -98,7 +101,9 @@ const Menu = () => {
         <Navbar />
         <div className="pt-16 flex items-center justify-center min-h-screen">
           <div className="text-center text-white">
-            <div className="text-6xl mb-4">🍽️</div>
+                         <div className="text-6xl mb-4">
+               <Utensils className="w-16 h-16 mx-auto text-gray-400" />
+             </div>
             <h2 className="text-2xl font-bold mb-2">Restaurant not found</h2>
             <p className="text-gray-400 mb-4">The restaurant you're looking for doesn't exist.</p>
             <Button onClick={() => navigate('/search')} className="bg-white text-black hover:bg-gray-200">
@@ -138,52 +143,54 @@ const Menu = () => {
                 </div>
 
                 <div className="space-y-2 text-sm text-gray-400">
-                  {restaurant.address && (
-                    <div className="flex items-center gap-2">
-                      <span>📍</span>
-                      <span>
-                        {typeof restaurant.address === 'string' 
-                          ? restaurant.address 
-                          : `${restaurant.address.street || ''} ${restaurant.address.city || 'Karachi'} ${restaurant.address.country || 'Pakistan'}`.trim()
-                        }
-                      </span>
-                    </div>
-                  )}
-                  {restaurant.phone && (
-                    <div className="flex items-center gap-2">
-                      <span>📞</span>
-                      <span>{restaurant.phone}</span>
-                    </div>
-                  )}
-                  {restaurant.avg_rating && (
-                    <div className="flex items-center gap-2">
-                      <span>⭐</span>
-                      <span>{restaurant.avg_rating.toFixed(1)} ({restaurant.review_count} reviews)</span>
-                    </div>
-                  )}
-                  {restaurant.price_range && (
-                    <div className="flex items-center gap-2">
-                      <span>💰</span>
-                      <span>{restaurant.price_range}</span>
-                    </div>
-                  )}
+                                     {restaurant.address && (
+                     <div className="flex items-center gap-2">
+                       <MapPin className="w-4 h-4" />
+                       <span>
+                         {typeof restaurant.address === 'string' 
+                           ? restaurant.address 
+                           : `${restaurant.address.street || ''} ${restaurant.address.city || 'Karachi'} ${restaurant.address.country || 'Pakistan'}`.trim()
+                         }
+                       </span>
+                     </div>
+                   )}
+                   {restaurant.phone && (
+                     <div className="flex items-center gap-2">
+                       <Phone className="w-4 h-4" />
+                       <span>{restaurant.phone}</span>
+                     </div>
+                   )}
+                   {restaurant.avg_rating && (
+                     <div className="flex items-center gap-2">
+                       <Star className="w-4 h-4" />
+                       <span>{restaurant.avg_rating.toFixed(1)} ({restaurant.review_count} reviews)</span>
+                     </div>
+                   )}
+                   {restaurant.price_range && (
+                     <div className="flex items-center gap-2">
+                       <DollarSign className="w-4 h-4" />
+                       <span>{restaurant.price_range}</span>
+                     </div>
+                   )}
                 </div>
               </div>
 
               <div className="flex flex-col gap-3">
-                <Button 
-                  onClick={() => navigate('/cart')}
-                  className="bg-white text-black hover:bg-gray-200"
-                >
-                  🛒 View Cart
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/map')}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-800"
-                >
-                  🗺️ View on Map
-                </Button>
+                                 <Button 
+                   onClick={() => navigate('/cart')}
+                   className="bg-white text-black hover:bg-gray-200"
+                 >
+                   <ShoppingCart className="w-4 h-4 mr-2" />
+                   View Cart
+                 </Button>
+                 <Button 
+                   variant="outline"
+                   onClick={() => navigate('/map')}
+                   className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                 >
+                   <Map className="w-4 h-4 mr-2" />
+                   View on Map
+                 </Button>
               </div>
             </div>
           </div>
@@ -193,7 +200,9 @@ const Menu = () => {
         <div className="max-w-7xl mx-auto px-4 py-8">
           {Object.keys(groupedMenuItems).length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">🍽️</div>
+              <div className="text-6xl mb-4">
+               <Utensils className="w-16 h-16 mx-auto text-gray-400" />
+             </div>
               <h3 className="text-lg font-medium text-white mb-2">No menu items available</h3>
               <p className="text-gray-400">This restaurant hasn't added their menu yet.</p>
             </div>
@@ -201,10 +210,10 @@ const Menu = () => {
             <div className="space-y-8">
               {Object.entries(groupedMenuItems).map(([category, items]) => (
                 <div key={category}>
-                  <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                    <span>🍴</span>
-                    {category}
-                  </h2>
+                                     <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                     <Utensils className="w-6 h-6" />
+                     {category}
+                   </h2>
                   <Separator className="bg-gray-800 mb-6" />
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -252,21 +261,24 @@ const Menu = () => {
                               )}
                             </div>
                             
-                            <Button
-                              onClick={() => handleAddToCart(item._id)}
-                              disabled={!item.isAvailable || addingToCart === item._id}
-                              className="bg-white text-black hover:bg-gray-200 disabled:opacity-50"
-                              size="sm"
-                            >
-                              {addingToCart === item._id ? (
-                                <>
-                                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2"></div>
-                                  Adding...
-                                </>
-                              ) : (
-                                <>🛒 Add to Cart</>
-                              )}
-                            </Button>
+                                                         <Button
+                               onClick={() => handleAddToCart(item._id)}
+                               disabled={!item.isAvailable || addingToCart === item._id}
+                               className="bg-white text-black hover:bg-gray-200 disabled:opacity-50"
+                               size="sm"
+                             >
+                               {addingToCart === item._id ? (
+                                 <>
+                                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                   Adding...
+                                 </>
+                               ) : (
+                                 <>
+                                   <ShoppingCart className="w-4 h-4 mr-2" />
+                                   Add to Cart
+                                 </>
+                               )}
+                             </Button>
                           </div>
                         </CardContent>
                       </Card>
