@@ -29,6 +29,15 @@ export interface OrdersByStatus {
   percentage: number;
 }
 
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: 'USER' | 'OWNER' | 'ADMIN';
+  createdAt: string;
+  updatedAt: string;
+}
+
 export const adminApi = {
   // Get all orders (admin only)
   getAllOrders: async (page: number = 1, limit: number = 20, filters?: {
@@ -127,6 +136,26 @@ export const adminApi = {
   // Delete restaurant (admin only)
   deleteRestaurant: async (restaurantId: string): Promise<void> => {
     const response = await API.delete(`/admin/restaurants/${restaurantId}`);
+    return response.data;
+  },
+
+  // Get all users (admin management)
+  getAllUsers: async (page: number = 1, limit: number = 20): Promise<{
+    users: User[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    };
+  }> => {
+    const response = await API.get(`/auth/users?page=${page}&limit=${limit}`);
+    return response.data.success ? response.data.data : response.data;
+  },
+
+  // Update user status
+  updateUserStatus: async (userId: string, isActive: boolean): Promise<void> => {
+    const response = await API.put(`/auth/users/${userId}/status`, { isActive });
     return response.data;
   },
 };

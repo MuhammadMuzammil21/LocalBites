@@ -65,4 +65,26 @@ export const cartApi = {
     const response = await API.delete('/cart/clear');
     return response.data;
   },
+
+  // Reorder items from a previous order
+  reorder: async (orderItems: { menuItem: { _id: string }; quantity: number }[]): Promise<Cart> => {
+    try {
+      // Clear current cart first
+      await cartApi.clearCart();
+      
+      // Add each item from the order to cart
+      let updatedCart: Cart | null = null;
+      for (const item of orderItems) {
+        updatedCart = await cartApi.addToCart({
+          menuItemId: item.menuItem._id,
+          quantity: item.quantity
+        });
+      }
+      
+      return updatedCart!;
+    } catch (error) {
+      console.error('Error reordering items:', error);
+      throw error;
+    }
+  },
 };

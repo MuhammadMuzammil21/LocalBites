@@ -9,6 +9,7 @@ import Cart from './pages/Cart';
 import CheckoutPage from './pages/CheckoutPage';
 import Map from './pages/Map';
 import AdminDashboard from './pages/AdminDashboard';
+import UserDashboard from './pages/UserDashboard';
 import ResetPassword from './components/auth/ResetPassword';
 import AuthDialog from './components/auth/AuthDialog';
 
@@ -26,8 +27,8 @@ function App() {
             <Route path="/login" element={<Home />} />
             <Route path="/map" element={<Map />} />
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/profile" element={<Home />} />
-            <Route path="/orders" element={<Cart />} />
+            <Route path="/profile" element={<UserDashboard />} />
+            <Route path="/orders" element={<UserDashboard />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
           </Routes>
           <AuthDialog />

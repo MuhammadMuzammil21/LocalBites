@@ -7,6 +7,7 @@ const {
   deleteRestaurant,
   searchRestaurants,
   getNearbyRestaurants,
+  getRecommendations,
 } = require('../controllers/restaurantController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const asyncHandler = require('../utils/asyncHandler');
@@ -17,6 +18,9 @@ const router = express.Router();
 router.get('/', getRestaurants);
 router.get('/search', searchRestaurants);
 router.get('/nearby', getNearbyRestaurants);
+
+// Protected routes
+router.get('/recommendations', protect, getRecommendations);
 
 // GeoJSON endpoint for map integration
 router.get('/geojson', asyncHandler(async (req, res) => {

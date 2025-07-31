@@ -278,6 +278,147 @@ const getNearbyRestaurants = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Get restaurant recommendations for user
+// @route   GET /api/restaurants/recommendations
+// @access  Private
+const getRecommendations = asyncHandler(async (req, res) => {
+  try {
+    // Get user's order history to find preferred cuisines
+    const Order = require('../models/Order');
+    const userOrders = await Order.find({ user: req.user.id })
+      .populate('restaurant')
+      .limit(10)
+      .sort({ createdAt: -1 });
+
+    let recommendations = [];
+
+    if (userOrders.length > 0) {
+      // Extract cuisines from user's order history
+      const preferredCuisines = [];
+      const orderedRestaurantIds = [];
+
+      userOrders.forEach(order => {
+        if (order.restaurant && order.restaurant.cuisines) {
+          preferredCuisines.push(...order.restaurant.cuisines);
+          orderedRestaurantIds.push(order.restaurant._id);
+        }
+      });
+
+      // Get unique cuisines
+      const uniqueCuisines = [...new Set(preferredCuisines)];
+
+      if (uniqueCuisines.length > 0) {
+        // Find restaurants with similar cuisines that user hasn't ordered from
+        recommendations = await Restaurant.find({
+          cuisines: { $in: uniqueCuisines },
+          _id: { $nin: orderedRestaurantIds },
+          is_verified: true
+        })
+        .select('-__v')
+        .sort({ avg_rating: -1, review_count: -1 })
+        .limit(8);
+      }
+    }
+
+    // If no recommendations from order history or not enough, get top-rated restaurants
+    if (recommendations.length < 5) {
+      const topRated = await Restaurant.find({
+        is_verified: true,
+        avg_rating: { $gte: 4.0 }
+      })
+      .select('-__v')
+      .sort({ avg_rating: -1, review_count: -1 })
+      .limit(8 - recommendations.length);
+
+      recommendations = [...recommendations, ...topRated];
+    }
+
+    // If still not enough, get featured restaurants
+    if (recommendations.length < 5) {
+      const featured = await Restaurant.find({
+        is_verified: true,
+        featured: true
+      })
+      .select('-__v')
+      .sort({ createdAt: -1 })
+      .limit(8 - recommendations.length);
+
+      recommendations = [...recommendations, ...featured];
+    }
+
+    // Remove duplicates
+    const uniqueRecommendations = recommendations.filter((restaurant, index, self) =>
+      index === self.findIndex(r => r._id.toString() === restaurant._id.toString())
+    );
+
+    res.json({
+      success: true,
+      data: uniqueRecommendations.slice(0, 6)
+    });
+  } catch (error) {
+    console.error('Error getting recommendations:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get recommendations'
+    });
+  }
+});
+
+// @desc    Get all restaurants for admin management
+// @route   GET /api/admin/restaurants
+// @access  Private (Admin only)
+const getAllRestaurants = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const skip = (page - 1) * limit;
+
+  const restaurants = await Restaurant.find()
+    .select('-__v')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const total = await Restaurant.countDocuments();
+
+  res.json({
+    success: true,
+    data: {
+      restaurants,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    }
+  });
+});
+
+// @desc    Update restaurant verification status
+// @route   PUT /api/admin/restaurants/:id/status
+// @access  Private (Admin only)
+const updateRestaurantStatus = asyncHandler(async (req, res) => {
+  const { isVerified } = req.body;
+  
+  const restaurant = await Restaurant.findById(req.params.id);
+  
+  if (!restaurant) {
+    return res.status(404).json({
+      success: false,
+      message: 'Restaurant not found'
+    });
+  }
+
+  restaurant.is_verified = isVerified;
+  await restaurant.save();
+
+  res.json({
+    success: true,
+    data: restaurant,
+    message: `Restaurant ${isVerified ? 'verified' : 'unverified'} successfully`
+  });
+});
+
 module.exports = {
   createRestaurant,
   getRestaurants,
@@ -286,4 +427,7 @@ module.exports = {
   deleteRestaurant,
   searchRestaurants,
   getNearbyRestaurants,
+  getRecommendations,
+  getAllRestaurants,
+  updateRestaurantStatus,
 };

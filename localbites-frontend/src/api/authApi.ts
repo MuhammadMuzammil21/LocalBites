@@ -1,6 +1,17 @@
 import API from './axios';
 import { User, AuthResponse, ForgotPasswordData, ResetPasswordData } from '../types';
 
+export interface Address {
+  _id?: string;
+  label: string;
+  street: string;
+  city: string;
+  state: string;
+  zip?: string;
+  country: string;
+  isDefault: boolean;
+}
+
 export const authApi = {
   // Register new user
   register: async (userData: { name: string; email: string; password: string; role?: 'USER' | 'OWNER' | 'ADMIN' }): Promise<AuthResponse> => {
@@ -27,14 +38,20 @@ export const authApi = {
   },
 
   // Get current user profile
-  getProfile: async (): Promise<User> => {
+  getProfile: async (): Promise<User & { addresses?: Address[] }> => {
     const response = await API.get('/auth/me');
     return response.data.success ? response.data.data : response.data;
   },
 
   // Update user profile
-  updateProfile: async (userData: Partial<User>): Promise<User> => {
+  updateProfile: async (userData: Partial<User & { addresses?: Address[] }>): Promise<User & { addresses?: Address[] }> => {
     const response = await API.put('/auth/profile', userData);
     return response.data.success ? response.data.data : response.data;
+  },
+
+  // Change password
+  changePassword: async (data: { currentPassword: string; newPassword: string }): Promise<{ message: string }> => {
+    const response = await API.put('/auth/change-password', data);
+    return response.data;
   },
 };

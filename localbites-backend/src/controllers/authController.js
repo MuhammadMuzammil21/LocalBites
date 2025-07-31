@@ -126,14 +126,125 @@ const resetPassword = async (req, res) => {
   });
 };
 
+// GET /api/auth/me - Get current user profile
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password -resetPasswordToken -resetPasswordExpire');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.json({ success: true, data: user });
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ success: false, message: 'Error fetching profile' });
+  }
+};
+
+// PUT /api/auth/profile - Update user profile
+const updateProfile = async (req, res) => {
+  try {
+    const { name, email, addresses } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Update basic profile fields
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (addresses) user.addresses = addresses;
+
+    const updatedUser = await user.save();
+    
+    // Return user without sensitive data
+    const userResponse = await User.findById(updatedUser._id).select('-password -resetPasswordToken -resetPasswordExpire');
+    
+    res.json({ success: true, data: userResponse });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ success: false, message: 'Error updating profile' });
+  }
+};
+
+// PUT /api/auth/change-password - Change user password
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Check current password
+    const isMatch = await user.matchPassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ success: true, message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    res.status(500).json({ success: false, message: 'Error changing password' });
+  }
+};
+
 // GET /api/auth/users (Admin only)
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}).select('-password -resetPasswordToken -resetPasswordExpire');
-    res.json(users);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const users = await User.find({})
+      .select('-password -resetPasswordToken -resetPasswordExpire')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const total = await User.countDocuments();
+    const pages = Math.ceil(total / limit);
+
+    res.json({
+      success: true,
+      data: {
+        users,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages
+        }
+      }
+    });
   } catch (error) {
     console.error('Error fetching users:', error);
-    res.status(500).json({ message: 'Error fetching users' });
+    res.status(500).json({ success: false, message: 'Error fetching users' });
+  }
+};
+
+// PUT /api/auth/users/:id/status (Admin only)
+const updateUserStatus = async (req, res) => {
+  try {
+    const { isActive } = req.body;
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    user.isActive = isActive;
+    await user.save();
+
+    res.json({ success: true, message: `User ${isActive ? 'activated' : 'deactivated'} successfully` });
+  } catch (error) {
+    console.error('Error updating user status:', error);
+    res.status(500).json({ success: false, message: 'Error updating user status' });
   }
 };
 
@@ -142,5 +253,9 @@ module.exports = {
   loginUser,
   forgotPassword,
   resetPassword,
+  getProfile,
+  updateProfile,
+  changePassword,
   getAllUsers,
+  updateUserStatus,
 };

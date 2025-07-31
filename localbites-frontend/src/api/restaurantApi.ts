@@ -100,6 +100,17 @@ export const restaurantApi = {
     return response.data;
   },
 
+  // Get restaurant recommendations
+  getRecommendations: async (): Promise<Restaurant[]> => {
+    const response = await API.get('/restaurants/recommendations');
+    
+    // Handle both old and new API response formats
+    if (response.data.success) {
+      return response.data.data;
+    }
+    return response.data;
+  },
+
   // Get GeoJSON data for map
   getGeoJSON: async (): Promise<any> => {
     const response = await API.get('/restaurants/geojson');
