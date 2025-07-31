@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Search, MapPin, Filter, SortAsc, Star, Phone } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
@@ -40,15 +39,19 @@ const SearchResults = () => {
     setLoading(true);
 
     try {
-      const data = await restaurantApi.search({
+      const response = await restaurantApi.search({
         q: searchQuery,
         location,
         cuisine: selectedCuisine !== 'All' ? selectedCuisine : undefined
       });
-      setRestaurants(data);
+      
+      // Handle both old and new API response formats
+      const data = response.data || response;
+      setRestaurants(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
       toast.error('Failed to fetch search results');
+      setRestaurants([]);
     } finally {
       setLoading(false);
     }
@@ -65,7 +68,7 @@ const SearchResults = () => {
     setSearchParams(newParams);
     
     // Trigger new search with updated cuisine filter
-    handleSearch();
+    setTimeout(() => handleSearch(), 100);
   };
 
   const sortedRestaurants = [...restaurants].sort((a, b) => {
@@ -79,7 +82,7 @@ const SearchResults = () => {
     }
   });
 
-  const handleRestaurantClick = (restaurant: any) => {
+  const handleRestaurantClick = (restaurant: Restaurant) => {
     navigate(`/menu/${restaurant._id}`);
   };
 
@@ -96,7 +99,7 @@ const SearchResults = () => {
               {/* Search Inputs */}
               <div className="flex-1 flex gap-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">🔍</div>
                   <Input
                     type="text"
                     value={searchQuery}
@@ -107,12 +110,12 @@ const SearchResults = () => {
                   />
                 </div>
                 <div className="flex-1 relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">📍</div>
                   <Input
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Location"
+                    placeholder="Location in Karachi"
                     className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:bg-gray-700"
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   />
@@ -124,7 +127,7 @@ const SearchResults = () => {
 
               {/* Sort */}
               <div className="flex items-center gap-2">
-                <SortAsc className="w-4 h-4 text-gray-400" />
+                <span className="text-gray-400 text-sm">📊</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -142,7 +145,7 @@ const SearchResults = () => {
         <div className="bg-gray-900 border-b border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-4">
             <div className="flex items-center gap-2 mb-3">
-              <Filter className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-400 text-sm">🔽</span>
               <span className="text-sm font-medium text-gray-300">Cuisine:</span>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -150,7 +153,7 @@ const SearchResults = () => {
                 <Badge
                   key={cuisine}
                   variant={selectedCuisine === cuisine ? "default" : "outline"}
-                  className={`cursor-pointer hover:bg-gray-700 ${
+                  className={`cursor-pointer hover:bg-gray-700 transition-colors ${
                     selectedCuisine === cuisine 
                       ? 'bg-white text-black hover:bg-gray-200' 
                       : 'border-gray-600 text-gray-300 hover:border-gray-500'
@@ -168,7 +171,7 @@ const SearchResults = () => {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-white">
-              {restaurants.length} restaurant{restaurants.length !== 1 ? 's' : ''} found
+              {restaurants.length} restaurant{restaurants.length !== 1 ? 's' : ''} found in Karachi
             </h2>
             {searchQuery && (
               <p className="text-gray-400 mt-1">
@@ -179,19 +182,22 @@ const SearchResults = () => {
           </div>
 
           {loading ? (
-            <div className="text-center text-white py-10">Loading restaurants...</div>
+            <div className="text-center text-white py-10">
+              <div className="inline-block w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p>Loading restaurants...</p>
+            </div>
           ) : restaurants.length === 0 ? (
             <div className="text-center py-12">
-              <Search className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+              <div className="text-6xl mb-4">🔍</div>
               <h3 className="text-lg font-medium text-white mb-2">No restaurants found</h3>
-              <p className="text-gray-400">Try adjusting your search criteria</p>
+              <p className="text-gray-400">Try adjusting your search criteria or explore different areas of Karachi</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedRestaurants.map((restaurant) => (
                 <Card
                   key={restaurant._id}
-                  className="cursor-pointer hover:shadow-lg transition-shadow bg-gray-800 border-gray-700 hover:border-gray-600"
+                  className="cursor-pointer hover:shadow-lg transition-all duration-200 bg-gray-800 border-gray-700 hover:border-gray-600 hover:scale-105"
                   onClick={() => handleRestaurantClick(restaurant)}
                 >
                   <CardHeader className="pb-3">
@@ -201,7 +207,7 @@ const SearchResults = () => {
                       </CardTitle>
                       {restaurant.avg_rating && (
                         <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                          <span className="text-yellow-400">⭐</span>
                           <span className="text-sm font-medium text-white">
                             {restaurant.avg_rating.toFixed(1)}
                           </span>
@@ -234,19 +240,25 @@ const SearchResults = () => {
                     <div className="space-y-2 text-sm text-gray-400">
                       {restaurant.address && (
                         <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4" />
+                          <span>📍</span>
                           <span className="truncate">
                             {typeof restaurant.address === 'string' 
                               ? restaurant.address 
-                              : `${restaurant.address.street || ''} ${restaurant.address.city || ''} ${restaurant.address.country || ''}`.trim()
+                              : `${restaurant.address.street || ''} ${restaurant.address.city || 'Karachi'} ${restaurant.address.country || 'Pakistan'}`.trim()
                             }
                           </span>
                         </div>
                       )}
                       {restaurant.phone && (
                         <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4" />
+                          <span>📞</span>
                           <span>{restaurant.phone}</span>
+                        </div>
+                      )}
+                      {restaurant.price_range && (
+                        <div className="flex items-center gap-2">
+                          <span>💰</span>
+                          <span>{restaurant.price_range}</span>
                         </div>
                       )}
                     </div>
@@ -261,4 +273,4 @@ const SearchResults = () => {
   );
 };
 
-export default SearchResults; 
+export default SearchResults;

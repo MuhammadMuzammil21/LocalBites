@@ -1,5 +1,4 @@
 "use client";
-import { Menu, MapPin, User, ChevronDown, LogOut, Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
@@ -16,13 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "../ui/dropdown-menu";
-
-const cartItems = [
-  { id: 1, name: "Burger", price: 5.99 },
-  { id: 2, name: "Fries", price: 2.99 },
-];
-
-const totalPrice = cartItems.reduce((sum, item) => sum + item.price, 0);
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -74,17 +66,17 @@ export default function Navbar() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search restaurants..."
+              placeholder="Search restaurants in Karachi..."
               className="w-64 bg-white/10 border-white/20 text-white placeholder:text-gray-300 focus:bg-white/20"
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
             <Button
               onClick={handleSearch}
               variant="ghost"
-              size="icon"
-              className="text-white hover:bg-white/10"
+              size="sm"
+              className="text-white hover:bg-white/10 px-3"
             >
-              <Search className="w-4 h-4" />
+              🔍
             </Button>
           </div>
         </div>
@@ -97,7 +89,7 @@ export default function Navbar() {
                 <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 p-0">
                   <Avatar className="h-8 w-8 bg-gray-700 border border-gray-600">
                     <AvatarFallback className="bg-gray-700 text-white text-sm font-medium">
-                      {user?.name ? getInitials(user.name) : "U"}
+                      {user?.name ? getInitials(user.name) : "👤"}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -108,21 +100,25 @@ export default function Navbar() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-gray-700" />
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <a href="/profile" className="w-full">Profile</a>
+                  <button onClick={() => navigate('/profile')} className="w-full text-left">👤 Profile</button>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <a href="/orders" className="w-full">Orders</a>
+                  <button onClick={() => navigate('/orders')} className="w-full text-left">📋 Orders</button>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <a href="/cart" className="w-full">Cart</a>
+                  <button onClick={() => navigate('/cart')} className="w-full text-left">🛒 Cart</button>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <a href="/settings" className="w-full">Settings</a>
+                  <button onClick={() => navigate('/map')} className="w-full text-left">🗺️ Map View</button>
                 </DropdownMenuItem>
+                {user?.role === 'ADMIN' && (
+                  <DropdownMenuItem className="text-white hover:bg-gray-700">
+                    <button onClick={() => navigate('/admin')} className="w-full text-left">⚙️ Admin Dashboard</button>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator className="bg-gray-700" />
                 <DropdownMenuItem className="text-white hover:bg-red-600" onClick={handleLogout}>
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
+                  🚪 Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -130,10 +126,15 @@ export default function Navbar() {
             <AuthDialog />
           )}
           
-          {/* Location Icon */}
-          <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">
-            <MapPin className="w-4 h-4 text-white" />
-          </div>
+          {/* Location Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-white hover:bg-white/10"
+            onClick={() => navigate('/map')}
+          >
+            📍 Karachi
+          </Button>
         </div>
 
         {/* Mobile Menu */}
@@ -144,7 +145,7 @@ export default function Navbar() {
                 <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 p-0">
                   <Avatar className="h-8 w-8 bg-gray-700 border border-gray-600">
                     <AvatarFallback className="bg-gray-700 text-white text-sm font-medium">
-                      {user?.name ? getInitials(user.name) : "U"}
+                      {user?.name ? getInitials(user.name) : "👤"}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -155,24 +156,28 @@ export default function Navbar() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-gray-700" />
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <button onClick={() => navigate('/search')} className="w-full text-left">Browse All</button>
+                  <button onClick={() => navigate('/search')} className="w-full text-left">🔍 Browse All</button>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <a href="/regions" className="w-full">Regions</a>
+                  <button onClick={() => navigate('/map')} className="w-full text-left">🗺️ Map View</button>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <a href="/profile" className="w-full">Profile</a>
+                  <button onClick={() => navigate('/profile')} className="w-full text-left">👤 Profile</button>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <a href="/orders" className="w-full">Orders</a>
+                  <button onClick={() => navigate('/orders')} className="w-full text-left">📋 Orders</button>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <a href="/cart" className="w-full">Cart</a>
+                  <button onClick={() => navigate('/cart')} className="w-full text-left">🛒 Cart</button>
                 </DropdownMenuItem>
+                {user?.role === 'ADMIN' && (
+                  <DropdownMenuItem className="text-white hover:bg-gray-700">
+                    <button onClick={() => navigate('/admin')} className="w-full text-left">⚙️ Admin</button>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator className="bg-gray-700" />
                 <DropdownMenuItem className="text-white hover:bg-red-600" onClick={handleLogout}>
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
+                  🚪 Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -180,17 +185,21 @@ export default function Navbar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
-                  <Menu className="h-6 w-6" />
+                  <span className="text-xl">☰</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-64 animate-in fade-in slide-in-from-top-2 duration-200 bg-gray-800 border-gray-700">
                 <DropdownMenuLabel className="text-white">Menu</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-gray-700" />
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <button onClick={() => navigate('/search')} className="w-full text-left">Browse All</button>
+                  <button onClick={() => navigate('/search')} className="w-full text-left">🔍 Browse All</button>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <a href="/regions" className="w-full">Regions</a>
+                  <button onClick={() => navigate('/map')} className="w-full text-left">🗺️ Map View</button>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem className="text-white hover:bg-gray-700">
+                  <AuthDialog />
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -215,9 +224,12 @@ function NavigationLinks({ vertical = false }: { vertical?: boolean }) {
       >
         Browse All
       </button>
-      <a href="/regions" className="transition-colors hover:text-white flex items-center gap-1 px-3 py-2 rounded-md hover:bg-white/5">
-        Regions <ChevronDown className="w-3 h-3" />
-      </a>
+      <button 
+        onClick={() => navigate('/map')}
+        className="transition-colors hover:text-white flex items-center gap-1 px-3 py-2 rounded-md hover:bg-white/5"
+      >
+        Map View 🗺️
+      </button>
     </div>
   );
 }

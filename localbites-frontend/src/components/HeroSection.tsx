@@ -1,7 +1,6 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useNavigate } from "react-router-dom";
-import { Search, Hand, Utensils, Coffee, MapPin, Pizza, Sandwich, Cake, Lightbulb, Map, Star } from "lucide-react";
 import { useState } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import { toast } from "sonner";
@@ -83,10 +82,10 @@ const HeroSection = () => {
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
         {/* Main Title */}
         <h1 className="text-5xl md:text-7xl font-bold text-white text-center mb-4">
-          Glimpse Spots Nearby
+          Discover Karachi Restaurants
         </h1>
         <p className="text-xl text-gray-300 text-center mb-12 max-w-2xl">
-          Discover and explore handpicked places by region.
+          Explore the best restaurants, cafes, and eateries across Karachi, Pakistan.
         </p>
 
         {/* Main Search Bar */}
@@ -96,7 +95,7 @@ const HeroSection = () => {
               {/* Left side - What */}
               <div className="flex items-center flex-1">
                 <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-3">
-                  <Utensils className="w-4 h-4 text-gray-600" />
+                  <span className="text-gray-600 text-sm font-medium">🍽️</span>
                 </div>
                 <Input
                   type="text"
@@ -115,13 +114,13 @@ const HeroSection = () => {
               {/* Right side - Where */}
               <div className="flex items-center flex-1">
                 <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-3">
-                  <MapPin className="w-4 h-4 text-gray-600" />
+                  <span className="text-gray-600 text-sm font-medium">📍</span>
                 </div>
                 <Input
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Enter your location or address"
+                  placeholder="Enter your location in Karachi"
                   className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-lg placeholder:text-gray-500 flex-1"
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   aria-label="Enter your location"
@@ -142,7 +141,7 @@ const HeroSection = () => {
                   </>
                 ) : (
                   <>
-                    <Search className="w-5 h-5 mr-2" />
+                    <span className="mr-2">🔍</span>
                     Search
                   </>
                 )}
@@ -159,7 +158,7 @@ const HeroSection = () => {
               className="bg-white/10 border-white/20 text-white hover:bg-white/30 hover:border-white/40 hover:scale-105 backdrop-blur-sm transition-all duration-200"
               aria-label="Use my current location"
             >
-              <MapPin className="w-3 h-3 mr-1" />
+              <span className="mr-1">📍</span>
               Use My Location
             </Button>
           </div>
@@ -171,7 +170,7 @@ const HeroSection = () => {
             <HoverCardTrigger asChild>
               <div className="flex items-center gap-2 text-white cursor-pointer group">
                 <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Hand className="w-3 h-3 text-black" />
+                  <span className="text-black text-sm">👋</span>
                 </div>
                 <span className="text-sm group-hover:text-gray-200 transition-colors">Need a Hand?</span>
               </div>
@@ -179,55 +178,55 @@ const HeroSection = () => {
             <HoverCardContent className="w-80 bg-gray-900/95 backdrop-blur-sm border-gray-700 text-white">
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <Lightbulb className="w-4 h-4 text-yellow-400" />
+                  <span className="text-yellow-400">💡</span>
                   <h4 className="font-semibold text-white">Quick Tips</h4>
                 </div>
                 
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Search className="w-3 h-3 text-blue-400" />
+                      <span className="text-blue-400 text-xs">🔍</span>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-200">Search Smart</p>
-                      <p className="text-xs text-gray-400">Use specific keywords like "pizza", "cafe", or "desserts" for better results</p>
+                      <p className="text-xs text-gray-400">Use specific keywords like "biryani", "cafe", or "desserts" for better results</p>
                     </div>
                   </div>
                   
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Map className="w-3 h-3 text-green-400" />
+                      <span className="text-green-400 text-xs">🗺️</span>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-200">Location Matters</p>
-                      <p className="text-xs text-gray-400">Enter your exact location or use "Use My Location" for nearby spots</p>
+                      <p className="text-xs text-gray-400">Enter areas like "Clifton", "Saddar", or "DHA" for nearby spots</p>
                     </div>
                   </div>
                   
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Utensils className="w-3 h-3 text-purple-400" />
+                      <span className="text-purple-400 text-xs">🍽️</span>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-200">Quick Categories</p>
-                      <p className="text-xs text-gray-400">Click on category icons below for instant food type searches</p>
+                      <p className="text-xs text-gray-400">Click on category buttons below for instant food type searches</p>
                     </div>
                   </div>
                   
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-yellow-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Star className="w-3 h-3 text-yellow-400" />
+                      <span className="text-yellow-400 text-xs">⭐</span>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-200">Explore Regions</p>
-                      <p className="text-xs text-gray-400">Discover handpicked places by region for curated experiences</p>
+                      <p className="text-sm font-medium text-gray-200">Explore Karachi</p>
+                      <p className="text-xs text-gray-400">Discover handpicked places across different areas of Karachi</p>
                     </div>
                   </div>
                 </div>
                 
                 <div className="pt-2 border-t border-gray-700">
                   <p className="text-xs text-gray-400">
-                    💡 <span className="font-medium text-gray-300">Pro tip:</span> Use keyboard shortcuts ⌘K to search and ⌘L for location
+                    <span className="text-yellow-400">💡</span> <span className="font-medium text-gray-300">Pro tip:</span> Use keyboard shortcuts ⌘K to search and ⌘L for location
                   </p>
                 </div>
               </div>
@@ -244,7 +243,7 @@ const HeroSection = () => {
           >
             <div className="relative w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-white/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-gray-700 group-hover:to-gray-800 group-hover:border-white/50 group-hover:shadow-lg group-hover:shadow-white/10">
               <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
-                <Utensils className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                <span className="text-2xl group-hover:scale-110 transition-transform">🍽️</span>
               </div>
             </div>
             <span className="text-white text-sm font-medium group-hover:text-gray-200 transition-colors">Restaurant</span>
@@ -257,7 +256,7 @@ const HeroSection = () => {
           >
             <div className="relative w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-white/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-gray-700 group-hover:to-gray-800 group-hover:border-white/50 group-hover:shadow-lg group-hover:shadow-white/10">
               <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
-                <Coffee className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                <span className="text-2xl group-hover:scale-110 transition-transform">☕</span>
               </div>
             </div>
             <span className="text-white text-sm font-medium group-hover:text-gray-200 transition-colors">Cafe</span>
@@ -270,7 +269,7 @@ const HeroSection = () => {
           >
             <div className="relative w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-white/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-gray-700 group-hover:to-gray-800 group-hover:border-white/50 group-hover:shadow-lg group-hover:shadow-white/10">
               <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
-                <Sandwich className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                <span className="text-2xl group-hover:scale-110 transition-transform">🍔</span>
               </div>
             </div>
             <span className="text-white text-sm font-medium group-hover:text-gray-200 transition-colors">Fast Food</span>
@@ -283,7 +282,7 @@ const HeroSection = () => {
           >
             <div className="relative w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-white/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-gray-700 group-hover:to-gray-800 group-hover:border-white/50 group-hover:shadow-lg group-hover:shadow-white/10">
               <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
-                <Pizza className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                <span className="text-2xl group-hover:scale-110 transition-transform">🍕</span>
               </div>
             </div>
             <span className="text-white text-sm font-medium group-hover:text-gray-200 transition-colors">Pizza</span>
@@ -296,7 +295,7 @@ const HeroSection = () => {
           >
             <div className="relative w-20 h-20 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-white/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-gray-700 group-hover:to-gray-800 group-hover:border-white/50 group-hover:shadow-lg group-hover:shadow-white/10">
               <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
-                <Cake className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                <span className="text-2xl group-hover:scale-110 transition-transform">🧁</span>
               </div>
             </div>
             <span className="text-white text-sm font-medium group-hover:text-gray-200 transition-colors">Desserts</span>

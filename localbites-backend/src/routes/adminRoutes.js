@@ -1,7 +1,6 @@
 const express = require('express');
 const { getAllOrders, updateOrderStatus } = require('../controllers/orderController');
-const auth = require('../middleware/authMiddleware');
-const admin = require('../middleware/adminMiddleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
 const {
     getTotalOrders,
     getTotalRevenue,
@@ -12,13 +11,13 @@ const {
 
 const router = express.Router();
 
-router.get('/orders', auth, admin, getAllOrders);
-router.put('/orders/:orderId/status', auth, admin, updateOrderStatus);
-router.get('/stats/orders', auth, admin, getTotalOrders);
-router.get('/stats/revenue', auth, admin, getTotalRevenue);
-router.get('/stats/orders-by-date', auth, admin, getOrdersByDate);
-router.get('/stats/status', auth, admin, getOrdersByStatus);
-router.get('/stats/top-restaurants', auth, admin, getTopRestaurants);
-  
+// Apply middleware to each route individually
+router.get('/orders', protect, authorize('ADMIN'), getAllOrders);
+router.put('/orders/:orderId/status', protect, authorize('ADMIN'), updateOrderStatus);
+router.get('/stats/orders', protect, authorize('ADMIN'), getTotalOrders);
+router.get('/stats/revenue', protect, authorize('ADMIN'), getTotalRevenue);
+router.get('/stats/orders-by-date', protect, authorize('ADMIN'), getOrdersByDate);
+router.get('/stats/status', protect, authorize('ADMIN'), getOrdersByStatus);
+router.get('/stats/top-restaurants', protect, authorize('ADMIN'), getTopRestaurants);
 
 module.exports = router;
