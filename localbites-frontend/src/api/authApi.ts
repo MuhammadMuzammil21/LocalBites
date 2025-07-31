@@ -1,45 +1,28 @@
 import API from './axios';
-
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-export interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-  role?: 'USER' | 'OWNER' | 'ADMIN';
-}
-
-export interface User {
-  _id: string;
-  name: string;
-  email: string;
-  role: 'USER' | 'OWNER' | 'ADMIN';
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface AuthResponse {
-  success: boolean;
-  data: {
-    user: User;
-    token: string;
-  };
-  message?: string;
-}
+import { User, AuthResponse, ForgotPasswordData, ResetPasswordData } from '../types';
 
 export const authApi = {
   // Register new user
-  register: async (userData: RegisterData): Promise<AuthResponse> => {
+  register: async (userData: { name: string; email: string; password: string; role?: 'USER' | 'OWNER' | 'ADMIN' }): Promise<AuthResponse> => {
     const response = await API.post('/auth/register', userData);
     return response.data;
   },
 
   // Login user
-  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
+  login: async (credentials: { email: string; password: string }): Promise<AuthResponse> => {
     const response = await API.post('/auth/login', credentials);
+    return response.data;
+  },
+
+  // Forgot password
+  forgotPassword: async (data: ForgotPasswordData): Promise<{ message: string }> => {
+    const response = await API.post('/auth/forgotpassword', data);
+    return response.data;
+  },
+
+  // Reset password
+  resetPassword: async (token: string, data: ResetPasswordData): Promise<AuthResponse> => {
+    const response = await API.put(`/auth/resetpassword/${token}`, data);
     return response.data;
   },
 

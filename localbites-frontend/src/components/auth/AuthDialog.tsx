@@ -14,6 +14,7 @@ import { Button } from "../ui/button";
 import API from "../../api/axios.js";
 import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
+import ForgotPassword from "./ForgotPassword";
 
 export default function AuthDialog() {
   const [email, setEmail] = useState("");
@@ -76,6 +77,13 @@ export default function AuthDialog() {
     }
   };
 
+  const handleBackToLogin = () => {
+    // Reset form and go back to login tab
+    setEmail("");
+    setPassword("");
+    setName("");
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -89,9 +97,10 @@ export default function AuthDialog() {
         </DialogHeader>
 
         <Tabs defaultValue="login" className="w-full mt-4">
-          <TabsList className="grid grid-cols-2 bg-gray-800 border border-gray-700">
+          <TabsList className="grid grid-cols-3 bg-gray-800 border border-gray-700">
             <TabsTrigger value="login" className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300">Login</TabsTrigger>
             <TabsTrigger value="register" className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300">Register</TabsTrigger>
+            <TabsTrigger value="forgot" className="data-[state=active]:bg-gray-700 data-[state=active]:text-white text-gray-300">Forgot</TabsTrigger>
           </TabsList>
 
           <TabsContent value="login">
@@ -140,6 +149,10 @@ export default function AuthDialog() {
                 {isLoading ? "Registering..." : "Register"}
               </Button>
             </form>
+          </TabsContent>
+
+          <TabsContent value="forgot">
+            <ForgotPassword onBack={handleBackToLogin} />
           </TabsContent>
         </Tabs>
       </DialogContent>

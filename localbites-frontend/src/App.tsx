@@ -9,6 +9,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import Login from './pages/Login';
 import Map from './pages/Map';
 import AdminDashboard from './pages/AdminDashboard';
+import ResetPassword from './components/auth/ResetPassword';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/profile" element={<Login />} />
           <Route path="/orders" element={<Cart />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
         <Toaster position="top-right" richColors />
       </BrowserRouter>
