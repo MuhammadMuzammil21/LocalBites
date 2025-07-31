@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import AuthDialog from "../auth/AuthDialog";
+import AuthDialogTrigger from "../auth/AuthDialogTrigger";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
 import {
@@ -124,7 +125,7 @@ export default function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <AuthDialog />
+            <AuthDialogTrigger />
           )}
           
           {/* Location Button */}
@@ -226,7 +227,7 @@ export default function Navbar() {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-gray-700" />
                 <DropdownMenuItem className="text-white hover:bg-gray-700">
-                  <AuthDialog />
+                  <AuthDialogTrigger />
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

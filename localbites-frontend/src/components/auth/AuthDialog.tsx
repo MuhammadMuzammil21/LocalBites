@@ -2,7 +2,6 @@
 import { useState } from "react";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -14,6 +13,7 @@ import { Button } from "../ui/button";
 import API from "../../api/axios.js";
 import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
+import { useAuthDialog } from "../../context/AuthDialogContext";
 import ForgotPassword from "./ForgotPassword";
 
 export default function AuthDialog() {
@@ -21,8 +21,8 @@ export default function AuthDialog() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const { login } = useAuth();
+  const { isOpen, closeAuthDialog } = useAuthDialog();
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
@@ -42,7 +42,7 @@ export default function AuthDialog() {
       // Auto-login after successful registration
       const { token, name: userName, email: userEmail, role, _id } = res.data;
       login({ _id, name: userName, email: userEmail, role }, token);
-      setIsOpen(false);
+      closeAuthDialog();
     } catch (err: any) {
       console.error(err.response?.data || err.message);
       toast.error(err.response?.data?.message || "Registration failed");
@@ -68,7 +68,7 @@ export default function AuthDialog() {
 
       login({ _id, name: userName, email: userEmail, role }, token);
       toast.success(`Welcome back, ${userName}!`);
-      setIsOpen(false);
+      closeAuthDialog();
     } catch (err: any) {
       console.error(err.response?.data || err.message);
       toast.error(err.response?.data?.message || "Login failed");
@@ -85,12 +85,7 @@ export default function AuthDialog() {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button className="text-white border-white/30 bg-gray-700 hover:bg-gray-600">
-          Sign In
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={closeAuthDialog}>
       <DialogContent className="bg-gray-900/95 backdrop-blur-sm border-gray-700 text-white">
         <DialogHeader>
           <DialogTitle className="text-center text-white">Welcome to LocalBites</DialogTitle>

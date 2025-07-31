@@ -10,11 +10,13 @@ import Navbar from '../components/layout/Navbar';
 import { cartApi, Cart as CartType } from '../api/cartApi';
 import { orderApi } from '../api/orderApi';
 import { useAuth } from '../context/AuthContext';
+import { useAuthDialog } from '../context/AuthDialogContext';
 import { ShoppingCart, MapPin, Loader2 } from 'lucide-react';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const { openAuthDialog } = useAuthDialog();
   
   const [cart, setCart] = useState<CartType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,11 +36,11 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      openAuthDialog();
       return;
     }
     fetchCart();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, openAuthDialog]);
 
   const fetchCart = async () => {
     setLoading(true);

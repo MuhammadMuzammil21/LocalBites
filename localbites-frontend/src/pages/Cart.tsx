@@ -7,11 +7,13 @@ import { toast } from 'sonner';
 import Navbar from '../components/layout/Navbar';
 import { cartApi, Cart as CartType, CartItem } from '../api/cartApi';
 import { useAuth } from '../context/AuthContext';
+import { useAuthDialog } from '../context/AuthDialogContext';
 import { ShoppingCart, Trash2, Loader2, ClipboardList, Rocket } from 'lucide-react';
 
 const Cart = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { openAuthDialog } = useAuthDialog();
   
   const [cart, setCart] = useState<CartType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -19,11 +21,11 @@ const Cart = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      openAuthDialog();
       return;
     }
     fetchCart();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, openAuthDialog]);
 
   const fetchCart = async () => {
     setLoading(true);

@@ -12,12 +12,14 @@ import { menuApi } from '../api/menuApi';
 import type { MenuItem } from '../api/menuApi';
 import { cartApi } from '../api/cartApi';
 import { useAuth } from '../context/AuthContext';
+import { useAuthDialog } from '../context/AuthDialogContext';
 import { MapPin, Phone, Star, DollarSign, ShoppingCart, Map, Utensils, Loader2 } from 'lucide-react';
 
 const Menu = () => {
   const { restaurantId } = useParams<{ restaurantId: string }>();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { openAuthDialog } = useAuthDialog();
   
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -53,7 +55,7 @@ const Menu = () => {
   const handleAddToCart = async (menuItemId: string) => {
     if (!isAuthenticated) {
       toast.error('Please login to add items to cart');
-      navigate('/login');
+      openAuthDialog();
       return;
     }
 

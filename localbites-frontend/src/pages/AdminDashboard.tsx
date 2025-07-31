@@ -9,10 +9,12 @@ import { toast } from 'sonner';
 import Navbar from '../components/layout/Navbar';
 import { adminApi } from '../api/adminApi';
 import { useAuth } from '../context/AuthContext';
+import { useAuthDialog } from '../context/AuthDialogContext';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const { openAuthDialog } = useAuthDialog();
   
   const [stats, setStats] = useState({
     totalOrders: 0,
@@ -30,12 +32,16 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== 'ADMIN') {
-      navigate('/login');
+    if (!isAuthenticated) {
+      openAuthDialog();
+      return;
+    }
+    if (user?.role !== 'ADMIN') {
+      navigate('/');
       return;
     }
     fetchDashboardData();
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, openAuthDialog]);
 
   const fetchDashboardData = async () => {
     setLoading(true);
