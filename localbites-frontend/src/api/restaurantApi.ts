@@ -54,7 +54,7 @@ export interface ApiResponse<T> {
 
 export const restaurantApi = {
   // Search restaurants
-  search: async (params: SearchParams): Promise<Restaurant[]> => {
+  search: async (params: SearchParams): Promise<ApiResponse<Restaurant[]>> => {
     const queryParams = new URLSearchParams();
     
     if (params.q) queryParams.append('q', params.q);
@@ -67,7 +67,20 @@ export const restaurantApi = {
     
     // Handle both old and new API response formats
     if (response.data.success) {
-      return response.data.data;
+      return response.data;
+    }
+    // If it's an array (old format), wrap it in the new format
+    if (Array.isArray(response.data)) {
+      return {
+        success: true,
+        data: response.data,
+        pagination: {
+          page: 1,
+          limit: response.data.length,
+          total: response.data.length,
+          pages: 1
+        }
+      };
     }
     return response.data;
   },
