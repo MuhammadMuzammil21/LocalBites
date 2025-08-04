@@ -1,6 +1,6 @@
 # LocalBites - Enhanced MERN Stack Food Delivery App
 
-A comprehensive food delivery platform built with the MERN stack, featuring advanced payment integration, real-time notifications, review systems, and role-based dashboards.
+A comprehensive food delivery platform built with the MERN stack, featuring advanced payment integration, real-time notifications, review systems, role-based dashboards, and complete pagination support.
 
 ## 🚀 Features
 
@@ -9,10 +9,11 @@ A comprehensive food delivery platform built with the MERN stack, featuring adva
 - ✅ **Review System**: User reviews, ratings, owner replies, helpful votes
 - ✅ **Owner Dashboard**: Menu CRUD, order management, analytics
 - ✅ **Real-time Notifications**: WebSocket-based updates, in-app alerts
+- ✅ **Pagination System**: Complete pagination for restaurants and search results
 
 ### Medium Priority (UX-Focused)
 - ✅ **Order Management**: Tracking, cancellations, reorders, delivery fees
-- ✅ **Search & Filters**: Price, distance, dietary filters, sorting
+- ✅ **Search & Filters**: Price, distance, dietary filters, sorting with pagination
 - ✅ **User Features**: Order history, recommendations, saved addresses
 - ✅ **Security**: Input validation, rate limiting, GDPR compliance
 
@@ -33,15 +34,25 @@ LocalBites/
 │   │   ├── routes/             # API endpoints
 │   │   ├── middleware/         # Auth, validation, security
 │   │   └── utils/              # Helper functions
+│   ├── test-stripe.js          # Stripe configuration test
 │   └── package.json
 ├── localbites-frontend/         # React + TypeScript
 │   ├── src/
 │   │   ├── components/         # Reusable UI components
+│   │   │   └── ui/             # shadcn/ui components
 │   │   ├── pages/              # Page components
 │   │   ├── api/                # API integration
 │   │   ├── context/            # React context
 │   │   └── types/              # TypeScript definitions
 │   └── package.json
+├── docs/                       # Documentation
+│   ├── DEPLOYMENT.md           # Deployment guide
+│   ├── EMAIL_SETUP.md          # Email configuration
+│   ├── ENHANCEMENTS_SUMMARY.md # Feature enhancements
+│   ├── FORGOT_PASSWORD_README.md # Password reset setup
+│   ├── PAGINATION_IMPLEMENTATION.md # Pagination guide
+│   ├── STRIPE_SETUP.md         # Stripe integration guide
+│   └── STRIPE_QUICK_REFERENCE.md # Stripe quick reference
 └── README.md
 ```
 
@@ -50,8 +61,8 @@ LocalBites/
 ### Backend
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
-- **MongoDB** - Database
-- **Mongoose** - ODM
+- **MongoDB** - Database with pagination support
+- **Mongoose** - ODM with optimized queries
 - **Socket.io** - Real-time communication
 - **Stripe** - Payment processing
 - **JWT** - Authentication
@@ -64,9 +75,8 @@ LocalBites/
 - **TypeScript** - Type safety
 - **Vite** - Build tool
 - **Tailwind CSS** - Styling
-- **shadcn/ui** - Component library
-- **Lucide React** - Icons
-- **React Router** - Navigation
+- **shadcn/ui** - Component library with custom pagination
+- **React Router** - Navigation with URL state management
 - **Axios** - HTTP client
 - **Socket.io-client** - Real-time updates
 
@@ -97,23 +107,21 @@ NODE_ENV=development
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/localbites
 JWT_SECRET=your_jwt_secret_here
-STRIPE_SECRET_KEY=your_stripe_secret_key
-STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-CLIENT_URL=http://localhost:5173
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_email_password
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_EMAIL=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+FROM_NAME=LocalBites
+FROM_EMAIL=noreply@localbites.com
+FRONTEND_URL=http://localhost:5173
 ```
 
 ### 3. Frontend Setup
 ```bash
 cd localbites-frontend
 npm install
-```
-
-Create a `.env` file:
-```env
-VITE_API_URL=http://localhost:5000/api
-VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 ```
 
 ### 4. Start Development Servers
@@ -125,59 +133,68 @@ npm run dev
 npm run dev
 ```
 
+### 5. Test Stripe Configuration (Optional)
+```bash
+# From localbites-backend directory
+node test-stripe.js
+```
+
 ## 📚 API Documentation
 
 ### Authentication
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
-- `POST /api/auth/forgot-password` - Password reset
-- `GET /api/auth/profile` - Get user profile
+- `POST /api/auth/forgotpassword` - Password reset
+- `PUT /api/auth/resetpassword/:resettoken` - Reset password
+- `GET /api/auth/me` - Get user profile
+- `PUT /api/auth/profile` - Update user profile
+- `PUT /api/auth/change-password` - Change password
 
-### Restaurants
-- `GET /api/restaurants` - Get all restaurants
+### Restaurants (with Pagination)
+- `GET /api/restaurants?page=1&limit=20` - Get paginated restaurants
+- `GET /api/restaurants/search?q=query&page=1&limit=20` - Search with pagination
+- `GET /api/restaurants/nearby?lat=24.8607&lng=67.0011` - Get nearby restaurants
+- `GET /api/restaurants/geojson` - Get GeoJSON data for map
 - `GET /api/restaurants/:id` - Get restaurant details
 - `POST /api/restaurants` - Create restaurant (admin/owner)
 
 ### Menu Items
-- `GET /api/menu/restaurant/:id` - Get restaurant menu
-- `POST /api/menu` - Add menu item (owner)
-- `PUT /api/menu/:id` - Update menu item (owner)
-- `DELETE /api/menu/:id` - Delete menu item (owner)
+- `GET /api/menu/:restaurantId` - Get restaurant menu
+- `POST /api/menu/:restaurantId` - Add menu item (owner)
+- `PUT /api/menu/item/:id` - Update menu item (owner)
+- `DELETE /api/menu/item/:id` - Delete menu item (owner)
 
 ### Orders
 - `POST /api/orders` - Place order
 - `GET /api/orders` - Get user orders
-- `GET /api/orders/tracking/:code` - Track order
-- `PUT /api/orders/:id/cancel` - Cancel order
-- `POST /api/orders/:id/reorder` - Reorder
+- `GET /api/orders/tracking/:trackingCode` - Track order
+- `PUT /api/orders/:orderId/cancel` - Cancel order
+- `POST /api/orders/:orderId/reorder` - Reorder
 
-### Payments
+### Payments (Stripe Integration)
 - `POST /api/payments/create-payment-intent` - Create payment intent
 - `POST /api/payments/confirm-payment` - Confirm payment
 - `POST /api/payments/refund` - Process refund
 - `GET /api/payments/history` - Payment history
+- `GET /api/payments/:paymentId` - Get payment details
 
 ### Reviews
 - `POST /api/reviews` - Create review
-- `GET /api/reviews/restaurant/:id` - Get restaurant reviews
-- `PUT /api/reviews/:id` - Update review
-- `DELETE /api/reviews/:id` - Delete review
-- `POST /api/reviews/:id/helpful` - Mark helpful
-- `POST /api/reviews/:id/reply` - Owner reply
+- `GET /api/reviews/restaurant/:restaurantId` - Get restaurant reviews
+- `GET /api/reviews/user` - Get user reviews
+- `PUT /api/reviews/:reviewId` - Update review
+- `DELETE /api/reviews/:reviewId` - Delete review
+- `POST /api/reviews/:reviewId/helpful` - Mark helpful
+- `POST /api/reviews/:reviewId/reply` - Owner reply
 
-### Notifications
-- `GET /api/notifications` - Get user notifications
-- `PUT /api/notifications/:id/read` - Mark as read
-- `PUT /api/notifications/mark-all-read` - Mark all as read
-- `GET /api/notifications/unread-count` - Get unread count
-
-### Owner Dashboard
-- `GET /api/owner/dashboard/:id` - Dashboard overview
-- `GET /api/owner/:id/orders` - Restaurant orders
-- `PUT /api/owner/orders/:id/status` - Update order status
-- `GET /api/owner/:id/menu` - Restaurant menu
-- `POST /api/owner/:id/menu` - Add menu item
-- `GET /api/owner/:id/analytics` - Restaurant analytics
+### Admin Routes
+- `GET /api/admin/stats` - Get admin statistics
+- `GET /api/admin/users` - Get all users (paginated)
+- `PUT /api/admin/users/:id/status` - Update user status
+- `DELETE /api/admin/users/:id` - Delete user
+- `GET /api/admin/restaurants` - Get all restaurants (paginated)
+- `PUT /api/admin/restaurants/:id/status` - Update restaurant status
+- `GET /api/admin/orders` - Get all orders (paginated)
 
 ## 🔐 Security Features
 
@@ -189,87 +206,91 @@ npm run dev
 - **Helmet** - Security headers
 - **XSS Protection** - Cross-site scripting prevention
 - **MongoDB Sanitization** - NoSQL injection prevention
+- **Environment Variable Validation** - Startup configuration checks
 
 ## 💳 Payment Integration
 
 ### Stripe Setup
-1. Create a Stripe account
-2. Get your API keys from the dashboard
+1. Create a Stripe account at [stripe.com](https://stripe.com)
+2. Get your test API keys from the dashboard
 3. Add keys to environment variables
-4. Test payments using Stripe test cards
+4. Run `node test-stripe.js` to verify configuration
+5. Use test cards for development (see [docs/STRIPE_QUICK_REFERENCE.md](docs/STRIPE_QUICK_REFERENCE.md))
 
-### Supported Payment Methods
-- Credit/Debit cards
-- Digital wallets (Apple Pay, Google Pay)
-- Bank transfers (ACH)
+### Supported Features
+- Payment intent creation and confirmation
+- Refund processing
+- Payment history tracking
+- Receipt generation
+- PKR currency support
 
-## 🔔 Real-time Features
+## 📄 Pagination System
 
-### WebSocket Events
-- Order status updates
-- Payment confirmations
-- New review notifications
-- Real-time chat (future)
+### Features
+- **Complete Navigation**: Browse through all restaurants, not just the first 20
+- **Smart Pagination**: Ellipsis for large page counts
+- **URL State Management**: Shareable page links
+- **Filter Integration**: Category filtering works across all pages
+- **Search Integration**: Search results are properly paginated
+- **Performance Optimized**: Only loads 20 items at a time
 
-### Notification Types
-- Order confirmations
-- Payment success/failure
-- Review received/replied
-- Delivery updates
-- System announcements
+### Implementation
+- Custom shadcn/ui pagination component
+- Backend pagination with MongoDB aggregation
+- Frontend state management with React hooks
+- URL parameter synchronization
+- Smooth page transitions with scroll-to-top
 
-## 📊 Analytics & Reporting
+For detailed implementation guide, see [docs/PAGINATION_IMPLEMENTATION.md](docs/PAGINATION_IMPLEMENTATION.md)
 
-### Owner Dashboard
-- Revenue analytics
-- Order statistics
-- Popular menu items
-- Customer insights
-- Sales trends
+## 📚 Documentation
 
-### Admin Dashboard
-- Platform overview
-- Restaurant management
-- User statistics
-- System health monitoring
+All documentation has been organized in the `docs/` directory:
+
+- **[DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Complete deployment guide
+- **[EMAIL_SETUP.md](docs/EMAIL_SETUP.md)** - Email configuration for password reset
+- **[ENHANCEMENTS_SUMMARY.md](docs/ENHANCEMENTS_SUMMARY.md)** - Feature enhancement details
+- **[FORGOT_PASSWORD_README.md](docs/FORGOT_PASSWORD_README.md)** - Password reset implementation
+- **[PAGINATION_IMPLEMENTATION.md](docs/PAGINATION_IMPLEMENTATION.md)** - Pagination system guide
+- **[STRIPE_SETUP.md](docs/STRIPE_SETUP.md)** - Comprehensive Stripe integration guide
+- **[STRIPE_QUICK_REFERENCE.md](docs/STRIPE_QUICK_REFERENCE.md)** - Quick Stripe reference
 
 ## 🎨 UI/UX Features
 
 ### Design System
-- **Monochromatic Theme** - Professional color scheme
-- **shadcn/ui Components** - Consistent UI patterns
-- **Lucide Icons** - Clean, modern iconography
+- **Monochromatic Theme** - Professional black and white color scheme
+- **shadcn/ui Components** - Consistent UI patterns with custom pagination
+- **Clean Interface** - No external icons or images, typography-focused
 - **Responsive Design** - Mobile-first approach
-- **Dark/Light Mode** - User preference support
+- **Smooth Animations** - Page transitions and loading states
 
 ### User Experience
-- **Intuitive Navigation** - Easy-to-use interface
+- **Intuitive Navigation** - Easy-to-use interface with pagination
 - **Real-time Updates** - Live order tracking
-- **Smart Search** - Advanced filtering options
-- **Progressive Web App** - Offline capabilities
+- **Smart Search** - Advanced filtering with paginated results
+- **Performance Optimized** - Lazy loading and efficient data fetching
 
 ## 🚀 Deployment
 
-### Backend Deployment (Heroku)
+### Backend Deployment
 ```bash
-# Set up Heroku
-heroku create localbites-backend
-heroku config:set NODE_ENV=production
-heroku config:set MONGO_URI=your_mongodb_atlas_uri
-heroku config:set JWT_SECRET=your_jwt_secret
-heroku config:set STRIPE_SECRET_KEY=your_stripe_secret_key
+# Set environment variables
+export NODE_ENV=production
+export MONGO_URI=your_mongodb_atlas_uri
+export JWT_SECRET=your_jwt_secret
+export STRIPE_SECRET_KEY=your_stripe_secret_key
 
-# Deploy
-git push heroku main
+# Start production server
+npm start
 ```
 
-### Frontend Deployment (Vercel)
+### Frontend Deployment
 ```bash
-# Install Vercel CLI
-npm i -g vercel
+# Build for production
+npm run build
 
-# Deploy
-vercel --prod
+# Preview build
+npm run preview
 ```
 
 ## 🧪 Testing
@@ -277,38 +298,22 @@ vercel --prod
 ### Backend Testing
 ```bash
 cd localbites-backend
-npm test
+npm run dev  # Start development server
+node test-stripe.js  # Test Stripe configuration
 ```
 
 ### Frontend Testing
 ```bash
 cd localbites-frontend
-npm test
+npm run dev  # Start development server
+# Navigate to http://localhost:5173
 ```
 
-## 📝 Environment Variables
-
-### Backend (.env)
-```env
-NODE_ENV=development
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/localbites
-JWT_SECRET=your_jwt_secret_here
-JWT_EXPIRE=30d
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PUBLISHABLE_KEY=pk_test_...
-CLIENT_URL=http://localhost:5173
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_email_password
-EMAIL_FROM=noreply@localbites.com
-```
-
-### Frontend (.env)
-```env
-VITE_API_URL=http://localhost:5000/api
-VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
-VITE_APP_NAME=LocalBites
-```
+### Test Stripe Payments
+Use these test card numbers:
+- **Success**: 4242424242424242
+- **Declined**: 4000000000000002
+- **Insufficient Funds**: 4000000000009995
 
 ## 🤝 Contributing
 
@@ -328,9 +333,34 @@ For support, email support@localbites.com or create an issue in the repository.
 
 ## 🔄 Version History
 
+- **v2.1.0** - Added complete pagination system, organized documentation
 - **v2.0.0** - Enhanced features (Payment, Reviews, Notifications, Owner Dashboard)
 - **v1.0.0** - Initial release (Basic CRUD operations)
+
+## 🎯 Recent Improvements
+
+### Backend Error Fixes
+- ✅ Fixed missing route registrations (payment and review routes)
+- ✅ Added environment variable validation at startup
+- ✅ Improved error handling with asyncHandler consistency
+- ✅ Fixed authentication middleware references
+- ✅ Added comprehensive Stripe integration
+
+### Frontend Pagination Implementation
+- ✅ Custom pagination component with shadcn/ui styling
+- ✅ Complete restaurant browsing (not limited to first 20)
+- ✅ Search results pagination with URL state management
+- ✅ Category filtering across all pages
+- ✅ Smooth page transitions with loading states
+
+### Documentation Organization
+- ✅ Moved all documentation to `docs/` directory
+- ✅ Created comprehensive setup guides
+- ✅ Added Stripe integration documentation
+- ✅ Organized project structure for better maintainability
 
 ---
 
 **LocalBites** - Connecting local restaurants with food lovers 🍕
+
+*Now with complete pagination support and organized documentation!*
