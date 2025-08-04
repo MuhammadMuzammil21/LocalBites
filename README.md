@@ -315,52 +315,10 @@ Use these test card numbers:
 - **Declined**: 4000000000000002
 - **Insufficient Funds**: 4000000000009995
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
-
-For support, email support@localbites.com or create an issue in the repository.
-
-## 🔄 Version History
-
-- **v2.1.0** - Added complete pagination system, organized documentation
-- **v2.0.0** - Enhanced features (Payment, Reviews, Notifications, Owner Dashboard)
-- **v1.0.0** - Initial release (Basic CRUD operations)
-
-## 🎯 Recent Improvements
-
-### Backend Error Fixes
-- ✅ Fixed missing route registrations (payment and review routes)
-- ✅ Added environment variable validation at startup
-- ✅ Improved error handling with asyncHandler consistency
-- ✅ Fixed authentication middleware references
-- ✅ Added comprehensive Stripe integration
-
-### Frontend Pagination Implementation
-- ✅ Custom pagination component with shadcn/ui styling
-- ✅ Complete restaurant browsing (not limited to first 20)
-- ✅ Search results pagination with URL state management
-- ✅ Category filtering across all pages
-- ✅ Smooth page transitions with loading states
-
-### Documentation Organization
-- ✅ Moved all documentation to `docs/` directory
-- ✅ Created comprehensive setup guides
-- ✅ Added Stripe integration documentation
-- ✅ Organized project structure for better maintainability
-
 ---
 
 **LocalBites** - Connecting local restaurants with food lovers 🍕
-
-*Now with complete pagination support and organized documentation!*
