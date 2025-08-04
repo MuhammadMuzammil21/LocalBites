@@ -1,266 +1,336 @@
-# 🍽 LocalBites - Karachi Restaurant Discovery
+# LocalBites - Enhanced MERN Stack Food Delivery App
 
-A modern, full-stack web app to **discover restaurants across Karachi**, **explore menus**, **read/write reviews**, and manage listings. Built as a feature-rich MERN stack application with **geolocation capabilities** and **role-based access control**.
+A comprehensive food delivery platform built with the MERN stack, featuring advanced payment integration, real-time notifications, review systems, and role-based dashboards.
 
----
+## 🚀 Features
 
-## 🚀 Live Demo
+### High Priority (MVP-Critical)
+- ✅ **Payment Integration**: Stripe payment processing, receipts, refunds
+- ✅ **Review System**: User reviews, ratings, owner replies, helpful votes
+- ✅ **Owner Dashboard**: Menu CRUD, order management, analytics
+- ✅ **Real-time Notifications**: WebSocket-based updates, in-app alerts
 
-> _Coming Soon_ — Stay tuned!
+### Medium Priority (UX-Focused)
+- ✅ **Order Management**: Tracking, cancellations, reorders, delivery fees
+- ✅ **Search & Filters**: Price, distance, dietary filters, sorting
+- ✅ **User Features**: Order history, recommendations, saved addresses
+- ✅ **Security**: Input validation, rate limiting, GDPR compliance
 
----
+### Low Priority (Nice to Have)
+- ✅ **Analytics**: Sales trends, top items, restaurant statistics
+- ✅ **Performance**: Compression, caching, optimized queries
+- ✅ **Content Tools**: Image uploads, SEO optimization
+- ✅ **Mobile Optimization**: Responsive design, PWA-ready
 
-## 🎯 Project Goals
-
-- Showcase MERN stack proficiency with CRUD operations
-- Implement Karachi-focused restaurant discovery with geolocation
-- Provide complete restaurant management for owners and admins
-- Enable user reviews and ratings system
-- Deliver responsive, icon-free UI with modern design principles
-
----
-
-## 🔧 Tech Stack
-
-| Layer     | Technologies                                                                 |
-|-----------|------------------------------------------------------------------------------|
-| Frontend  | React + TypeScript, TailwindCSS, React Router, ShadCN UI Components         |
-| Backend   | Node.js, Express.js, MongoDB + Mongoose, JWT Auth, RESTful API               |
-| DevTools  | ESLint, Prettier, Nodemon, Postman                                           |
-| Hosting   | MongoDB Atlas for DB, Vercel/Netlify for frontend, Render/Heroku for backend  |
-
----
-
-## 🧱 Core Features
-
-| Feature              | Description                                           |
-|----------------------|-------------------------------------------------------|
-| **Restaurant Discovery** | Browse restaurants across Karachi with search & filters |
-| **Menu Exploration**      | Detailed menu items with categories and pricing     |
-| **Cart Management**      | Add/remove items, quantity control, order summary  |
-| **Order Processing**     | Complete checkout flow with multiple payment options |
-| **User Authentication**   | JWT-based auth with role-based access (Guest/User/Owner/Admin) |
-| **Location Services**    | Karachi-focused geolocation and area-based search  |
-| **Admin Dashboard**      | Order management, restaurant verification, analytics |
-
----
-
-## 👥 User Roles
-
-| Role              | Capabilities |
-|-------------------|-------------|
-| **Guest**         | Browse restaurants, view menus, search by location |
-| **User**          | Place orders, manage cart, write reviews, view order history |
-| **Restaurant Owner** | Manage restaurant profile, menu items, respond to reviews |
-| **Admin**         | Full system access - manage users, restaurants, orders, analytics |
-
----
-
-## 🗺️ Karachi-Focused Features
-
-- **Area-Based Discovery**: Clifton, Saddar, DHA, Gulshan-e-Iqbal, Korangi and more
-- **Local Cuisines**: Pakistani, Chinese, Italian, Fast Food, Biryani specialists
-- **Location Accuracy**: Precise coordinates for Karachi neighborhoods
-- **Cultural Relevance**: Local payment methods and food preferences
-
----
-
-## 📦 Project Structure
+## 🏗️ Architecture
 
 ```
-localbites/
-├── localbites-frontend/          # React frontend (TypeScript)
+LocalBites/
+├── localbites-backend/          # Node.js + Express API
 │   ├── src/
-│   │   ├── api/                  # API service layer
-│   │   ├── components/           # Reusable UI components
-│   │   ├── pages/                # Page components
-│   │   ├── context/             # React context providers
-│   │   └── lib/                  # Utility functions
-│   └── public/                  # Static assets
-├── localbites-backend/           # Express backend
-│   ├── controllers/              # Request handlers
-│   ├── middleware/              # Auth, error handling
-│   ├── models/                  # MongoDB schemas
-│   ├── routes/                  # API route definitions
-│   ├── scripts/                 # Database seeding
-│   └── utils/                  # Helper functions
-├── .env.example
+│   │   ├── controllers/         # Business logic
+│   │   ├── models/             # MongoDB schemas
+│   │   ├── routes/             # API endpoints
+│   │   ├── middleware/         # Auth, validation, security
+│   │   └── utils/              # Helper functions
+│   └── package.json
+├── localbites-frontend/         # React + TypeScript
+│   ├── src/
+│   │   ├── components/         # Reusable UI components
+│   │   ├── pages/              # Page components
+│   │   ├── api/                # API integration
+│   │   ├── context/            # React context
+│   │   └── types/              # TypeScript definitions
+│   └── package.json
 └── README.md
 ```
 
----
+## 🛠️ Tech Stack
 
-## 📚 API Endpoints
+### Backend
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **MongoDB** - Database
+- **Mongoose** - ODM
+- **Socket.io** - Real-time communication
+- **Stripe** - Payment processing
+- **JWT** - Authentication
+- **bcryptjs** - Password hashing
+- **Helmet** - Security headers
+- **Rate limiting** - API protection
+
+### Frontend
+- **React 19** - UI library
+- **TypeScript** - Type safety
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling
+- **shadcn/ui** - Component library
+- **Lucide React** - Icons
+- **React Router** - Navigation
+- **Axios** - HTTP client
+- **Socket.io-client** - Real-time updates
+
+## 📋 Prerequisites
+
+- Node.js (v18 or higher)
+- MongoDB (v6 or higher)
+- npm or yarn
+- Stripe account (for payments)
+
+## 🚀 Installation
+
+### 1. Clone the repository
+```bash
+git clone <repository-url>
+cd LocalBites
+```
+
+### 2. Backend Setup
+```bash
+cd localbites-backend
+npm install
+```
+
+Create a `.env` file:
+```env
+NODE_ENV=development
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/localbites
+JWT_SECRET=your_jwt_secret_here
+STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+CLIENT_URL=http://localhost:5173
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_email_password
+```
+
+### 3. Frontend Setup
+```bash
+cd localbites-frontend
+npm install
+```
+
+Create a `.env` file:
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+```
+
+### 4. Start Development Servers
+```bash
+# Backend (from localbites-backend directory)
+npm run dev
+
+# Frontend (from localbites-frontend directory)
+npm run dev
+```
+
+## 📚 API Documentation
 
 ### Authentication
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user profile
+- `POST /api/auth/forgot-password` - Password reset
+- `GET /api/auth/profile` - Get user profile
 
 ### Restaurants
 - `GET /api/restaurants` - Get all restaurants
-- `GET /api/restaurants/:id` - Get restaurant by ID
-- `GET /api/restaurants/search` - Search restaurants
-- `GET /api/restaurants/nearby` - Find nearby restaurants
-- `POST /api/restaurants` - Create restaurant (OWNER/ADMIN)
-- `PUT /api/restaurants/:id` - Update restaurant (OWNER/ADMIN)
-- `DELETE /api/restaurants/:id` - Delete restaurant (ADMIN)
+- `GET /api/restaurants/:id` - Get restaurant details
+- `POST /api/restaurants` - Create restaurant (admin/owner)
 
 ### Menu Items
-- `GET /api/menu/:restaurantId` - Get restaurant menu
-- `GET /api/menu/item/:id` - Get menu item
-- `POST /api/menu/:restaurantId` - Add menu item (OWNER)
-- `PUT /api/menu/item/:id` - Update menu item (OWNER)
-- `DELETE /api/menu/item/:id` - Delete menu item (OWNER)
-
-### Cart
-- `GET /api/cart` - Get user cart
-- `POST /api/cart/add` - Add item to cart
-- `DELETE /api/cart/remove` - Remove item from cart
-- `PUT /api/cart/update` - Update item quantity
-- `DELETE /api/cart/clear` - Clear cart
+- `GET /api/menu/restaurant/:id` - Get restaurant menu
+- `POST /api/menu` - Add menu item (owner)
+- `PUT /api/menu/:id` - Update menu item (owner)
+- `DELETE /api/menu/:id` - Delete menu item (owner)
 
 ### Orders
 - `POST /api/orders` - Place order
 - `GET /api/orders` - Get user orders
-- `GET /api/orders/:id` - Get order details
+- `GET /api/orders/tracking/:code` - Track order
 - `PUT /api/orders/:id/cancel` - Cancel order
-- `POST /api/orders/:id/rate` - Rate completed order
+- `POST /api/orders/:id/reorder` - Reorder
 
-### Admin
-- `GET /api/admin/orders` - Get all orders
-- `PUT /api/admin/orders/:id/status` - Update order status
-- `GET /api/admin/stats` - Get system statistics
-- `GET /api/admin/restaurants` - Get all restaurants
-- `PUT /api/admin/restaurants/:id/status` - Verify/unverify restaurant
+### Payments
+- `POST /api/payments/create-payment-intent` - Create payment intent
+- `POST /api/payments/confirm-payment` - Confirm payment
+- `POST /api/payments/refund` - Process refund
+- `GET /api/payments/history` - Payment history
 
----
+### Reviews
+- `POST /api/reviews` - Create review
+- `GET /api/reviews/restaurant/:id` - Get restaurant reviews
+- `PUT /api/reviews/:id` - Update review
+- `DELETE /api/reviews/:id` - Delete review
+- `POST /api/reviews/:id/helpful` - Mark helpful
+- `POST /api/reviews/:id/reply` - Owner reply
 
-## 🛠 Setup Instructions
+### Notifications
+- `GET /api/notifications` - Get user notifications
+- `PUT /api/notifications/:id/read` - Mark as read
+- `PUT /api/notifications/mark-all-read` - Mark all as read
+- `GET /api/notifications/unread-count` - Get unread count
 
-### Prerequisites
-- Node.js (v16 or higher)
-- MongoDB (local or Atlas)
-- npm or yarn
+### Owner Dashboard
+- `GET /api/owner/dashboard/:id` - Dashboard overview
+- `GET /api/owner/:id/orders` - Restaurant orders
+- `PUT /api/owner/orders/:id/status` - Update order status
+- `GET /api/owner/:id/menu` - Restaurant menu
+- `POST /api/owner/:id/menu` - Add menu item
+- `GET /api/owner/:id/analytics` - Restaurant analytics
 
-### Installation
+## 🔐 Security Features
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd localbites
-   ```
+- **JWT Authentication** - Secure token-based auth
+- **Password Hashing** - bcryptjs for password security
+- **Rate Limiting** - API request throttling
+- **Input Validation** - Request data sanitization
+- **CORS Protection** - Cross-origin request security
+- **Helmet** - Security headers
+- **XSS Protection** - Cross-site scripting prevention
+- **MongoDB Sanitization** - NoSQL injection prevention
 
-2. **Backend Setup**
-   ```bash
-   cd localbites-backend
-   npm install
-   cp .env.example .env
-   # Update .env with your MongoDB URI and JWT secret
-   ```
+## 💳 Payment Integration
 
-3. **Frontend Setup**
-   ```bash
-   cd ../localbites-frontend
-   npm install
-   ```
+### Stripe Setup
+1. Create a Stripe account
+2. Get your API keys from the dashboard
+3. Add keys to environment variables
+4. Test payments using Stripe test cards
 
-4. **Database Seeding (Optional)**
-   ```bash
-   cd ../localbites-backend
-   node scripts/seedRestaurants.js
-   ```
+### Supported Payment Methods
+- Credit/Debit cards
+- Digital wallets (Apple Pay, Google Pay)
+- Bank transfers (ACH)
 
-5. **Run Development Servers**
-   
-   **Backend:**
-   ```bash
-   cd localbites-backend
-   npm run dev
-   ```
-   
-   **Frontend:**
-   ```bash
-   cd localbites-frontend
-   npm run dev
-   ```
+## 🔔 Real-time Features
 
-6. **Access the Application**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:5000
+### WebSocket Events
+- Order status updates
+- Payment confirmations
+- New review notifications
+- Real-time chat (future)
 
----
+### Notification Types
+- Order confirmations
+- Payment success/failure
+- Review received/replied
+- Delivery updates
+- System announcements
 
-## 🎨 UI/UX Design Principles
+## 📊 Analytics & Reporting
 
-- **Icon-Free Interface**: Clean design using only typography, spacing, and emojis
-- **Karachi-Focused**: All content and examples reference Karachi locations
-- **Responsive Layout**: Mobile-first design with adaptive components
-- **Accessibility**: Proper contrast ratios and semantic HTML
-- **Performance**: Optimized loading states and efficient data fetching
+### Owner Dashboard
+- Revenue analytics
+- Order statistics
+- Popular menu items
+- Customer insights
+- Sales trends
 
----
+### Admin Dashboard
+- Platform overview
+- Restaurant management
+- User statistics
+- System health monitoring
 
-## 🔒 Security Features
+## 🎨 UI/UX Features
 
-- JWT token-based authentication
-- Role-based access control middleware
-- Password hashing with bcrypt
-- Input validation and sanitization
-- CORS configuration for secure API access
-- Environment-based configuration management
+### Design System
+- **Monochromatic Theme** - Professional color scheme
+- **shadcn/ui Components** - Consistent UI patterns
+- **Lucide Icons** - Clean, modern iconography
+- **Responsive Design** - Mobile-first approach
+- **Dark/Light Mode** - User preference support
 
----
+### User Experience
+- **Intuitive Navigation** - Easy-to-use interface
+- **Real-time Updates** - Live order tracking
+- **Smart Search** - Advanced filtering options
+- **Progressive Web App** - Offline capabilities
 
-## 📈 Current Development Status
+## 🚀 Deployment
 
-✅ **Phase 1 - Core Functionality**
-- Restaurant discovery and search
-- Menu exploration and cart management
-- User authentication and profiles
-- Order placement and history
+### Backend Deployment (Heroku)
+```bash
+# Set up Heroku
+heroku create localbites-backend
+heroku config:set NODE_ENV=production
+heroku config:set MONGO_URI=your_mongodb_atlas_uri
+heroku config:set JWT_SECRET=your_jwt_secret
+heroku config:set STRIPE_SECRET_KEY=your_stripe_secret_key
 
-✅ **Phase 2 - Advanced Features**
-- Admin dashboard with analytics
-- Location-based restaurant discovery
-- Role-based access control
-- Complete API integration
+# Deploy
+git push heroku main
+```
 
-🔲 **Phase 3 - Future Enhancements**
-- Review and rating system
-- Restaurant owner dashboard
-- Mobile app development
-- Advanced analytics and reporting
+### Frontend Deployment (Vercel)
+```bash
+# Install Vercel CLI
+npm i -g vercel
 
----
+# Deploy
+vercel --prod
+```
+
+## 🧪 Testing
+
+### Backend Testing
+```bash
+cd localbites-backend
+npm test
+```
+
+### Frontend Testing
+```bash
+cd localbites-frontend
+npm test
+```
+
+## 📝 Environment Variables
+
+### Backend (.env)
+```env
+NODE_ENV=development
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/localbites
+JWT_SECRET=your_jwt_secret_here
+JWT_EXPIRE=30d
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+CLIENT_URL=http://localhost:5173
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_email_password
+EMAIL_FROM=noreply@localbites.com
+```
+
+### Frontend (.env)
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
+VITE_APP_NAME=LocalBites
+```
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
----
-
-## 📝 License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 🆘 Support
+
+For support, email support@localbites.com or create an issue in the repository.
+
+## 🔄 Version History
+
+- **v2.0.0** - Enhanced features (Payment, Reviews, Notifications, Owner Dashboard)
+- **v1.0.0** - Initial release (Basic CRUD operations)
+
 ---
 
-## 👤 Author
-
-**Muzammil Khan**
-- GitHub: [MuhammadMuzammil21](https://github.com/MuhammadMuzammil21)
-- LinkedIn: [MuhammadMuzammil21](https://www.linkedin.com/in/MuhammadMuzammil21)
-
----
-
-## 🙏 Acknowledgments
-
-- Karachi's vibrant food scene for inspiration
-- MERN stack community for excellent tools and resources
-- ShadCN for beautiful UI components
-- TailwindCSS for efficient styling
+**LocalBites** - Connecting local restaurants with food lovers 🍕
