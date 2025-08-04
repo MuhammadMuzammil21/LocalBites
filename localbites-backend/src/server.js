@@ -7,6 +7,25 @@ const errorHandler = require('./middleware/errorHandler');
 // Load environment variables
 dotenv.config();
 
+// Validate required environment variables
+const requiredEnvVars = ['MONGO_URI', 'JWT_SECRET'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.error('❌ Missing required environment variables:', missingEnvVars.join(', '));
+  console.error('Please check your .env file and ensure all required variables are set.');
+  process.exit(1);
+}
+
+// Warn about optional environment variables
+const optionalEnvVars = ['STRIPE_SECRET_KEY', 'SMTP_EMAIL', 'SMTP_PASSWORD'];
+const missingOptionalVars = optionalEnvVars.filter(envVar => !process.env[envVar] || process.env[envVar].includes('your_'));
+
+if (missingOptionalVars.length > 0) {
+  console.warn('⚠️  Optional environment variables not configured:', missingOptionalVars.join(', '));
+  console.warn('Some features may not work properly. Please configure these in your .env file.');
+}
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -36,6 +55,8 @@ app.use('/api/restaurants', require('./routes/restaurantRoutes'));
 app.use('/api/menu', require('./routes/menu'));
 app.use('/api/cart', require('./routes/cartRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Error handling middleware (must be last)

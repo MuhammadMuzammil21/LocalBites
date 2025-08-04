@@ -8,7 +8,7 @@ const {
   getAllOrders,
   updateOrderStatus,
 } = require('../controllers/orderController');
-const { protect, admin } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ router.put('/:orderId/cancel', cancelOrder);
 router.post('/:orderId/reorder', reorder);
 
 // Admin/Owner routes
-router.get('/all', admin, getAllOrders);
-router.put('/:orderId/status', updateOrderStatus);
+router.get('/all', authorize('ADMIN'), getAllOrders);
+router.put('/:orderId/status', authorize('ADMIN', 'OWNER'), updateOrderStatus);
 
 module.exports = router;
